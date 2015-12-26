@@ -68,6 +68,17 @@ public class Polynomial {
         return new Polynomial(degress);
     }
 
+    public static Polynomial createFromBigInteger(BigInteger value) {
+        BitSet degrees = new BitSet();
+        int i = 0;
+        while (!value.equals(BigInteger.ZERO)) {
+            if (value.and(BigInteger.ONE).equals(BigInteger.ONE)) degrees.set(i);
+            i++;
+            value.shiftRight(1);
+        }
+        return new Polynomial(degrees);
+    }
+
     public static Polynomial createFromBytes(byte[] bytes, long degree) {
         BitSet degrees = new BitSet();
         for (int i = 0; i < degree; i++) {
@@ -97,7 +108,6 @@ public class Polynomial {
         polynomialDgrs.xor(this.degrees);
         return new Polynomial(polynomialDgrs);
     }
-
 
     public Polynomial mod(Polynomial polynomial) {
         int da = this.getDegree();
@@ -196,4 +206,24 @@ public class Polynomial {
         return false;
     }
 
+    public BigInteger toBigInteger() {
+        return new BigInteger(this.toBinaryString(), 2);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Polynomial that = (Polynomial) o;
+
+        return degrees.equals(that.degrees);
+
+    }
+
+
+    @Override
+    public int hashCode() {
+        return degrees.hashCode();
+    }
 }

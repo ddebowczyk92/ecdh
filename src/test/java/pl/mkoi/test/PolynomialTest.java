@@ -5,6 +5,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import pl.mkoi.util.model.Polynomial;
 
+import java.math.BigInteger;
+
 
 /**
  * Created by DominikD on 2015-10-31.
@@ -57,8 +59,8 @@ public class PolynomialTest {
 
     @Test
     public void mod() {
-        Polynomial polynomial1 = Polynomial.createFromLong(12);
-        Polynomial polynomial2 = Polynomial.createFromLong(3);
+        Polynomial polynomial1 = Polynomial.createFromLong(14);
+        Polynomial polynomial2 = Polynomial.createFromLong(4);
         Polynomial polynomial3 = polynomial1.mod(polynomial2);
         log.info("12 % 3 = " + polynomial3.toBinaryString());
 
@@ -82,7 +84,23 @@ public class PolynomialTest {
 
     @Test
     public void createIrreducible() {
-        Polynomial polynomial = Polynomial.createIrreducible(163);
+        Polynomial polynomial = Polynomial.createIrreducible(4);
         log.info("irreducible : " + polynomial.toBinaryString());
+    }
+
+    @Test
+    public void isIrreducible() {
+        Polynomial polynomial = Polynomial.createFromLong(19L);
+        log.info("is irreducible " + polynomial.toBinaryString() + "? " + !polynomial.isReducibile() );
+    }
+
+    @Test
+    public void pow() {
+        Polynomial generator = Polynomial.createFromLong(2L);
+        BigInteger power = BigInteger.valueOf(15L);
+        Polynomial mod = Polynomial.createFromLong(19L);
+        Polynomial result = generator.modPow(power, mod);
+        log.info(generator.toBinaryString() + " pow " + power.toString() + " mod " + mod.toBinaryString() + " = " + result.toBinaryString());
+
     }
 }
