@@ -6,16 +6,21 @@ package pl.mkoi.util.model;
  */
 public class EllipticCurve {
 
+
+    private final FiniteField field;
+    /**
+     * F2m <- this m is it
+     */
     private int m;
     /**
      * Curve equation parameter
      */
-    private int a;
+    private FiniteField.Element a;
 
     /**
      * Curve equation parameter
      */
-    private int b;
+    private FiniteField.Element b;
 
     private Point generatorPoint;
 
@@ -26,13 +31,8 @@ public class EllipticCurve {
      */
     private int n;
 
-
-    /**
-     * Co-factor h
-     */
-    private int numberOfPoints;
-
     private EllipticCurve() {
+        field = null;
     }
 
     /**
@@ -40,19 +40,16 @@ public class EllipticCurve {
      *
      * @param a                     parameter a of elliptic curve equation
      * @param b                     parameter b of elliptic curve equation, cant be zero
-     * @param m                     parameter of binary field
      * @param gPoint                generator point
      * @param irreduciblePolynomial polynomial used for modular arithmetic
-     * @param numberOfPoints        number of points defined on ec
      */
-    public EllipticCurve(int a, int b, int m, Point gPoint, Polynomial irreduciblePolynomial, int numberOfPoints) {
+    public EllipticCurve(FiniteField.Element a, FiniteField.Element b, FiniteField field, Point gPoint, Polynomial irreduciblePolynomial) {
         this.a = a;
         this.b = b;
-        this.m = m;
+        this.field = field;
 
         this.generatorPoint = gPoint;
         this.irreduciblePolynomial = irreduciblePolynomial;
-        this.numberOfPoints = numberOfPoints;
     }
 
     private long getMaxNumberForField() {
@@ -60,13 +57,27 @@ public class EllipticCurve {
     }
 
     /*first J second K*/
-    public Point addPoint(Point first, Point second) {
-        int slope = (first.getY() + second.getY()) / (first.getX() + second.getX());
+    public Point addPoint(Point j, Point k) {
 
-        int x = (int) (StrictMath.pow(slope, 2) + slope + first.getX() + second.getX() + slope);
-        int y = slope * (first.getX() + x) + x + first.getY();
+        if (!j.equals(k)) {
+            FiniteField.Element slope = field.divideElements(field.addElements(j.getY(), k.getY()), field.addElements(j.getX(), k.getX()));
 
-        return new Point(x, y);
+            FiniteField.Element slopesSum = field.addElements(field.powerElement(slope, 2), slope);
+
+
+            FiniteField.Element xL = field.addElements(field.addElements(field.addElements(slopesSum, j.getX()), k.getX()), a);
+            FiniteField.Element yL = field.addElements(field.addElements(field.multiplyElements(slope, field.addElements(j.getX(), xL)), xL), j.getY());
+
+            return new Point(xL, yL);
+        } else {
+            FiniteField.Element slope = field.addElements(j.getX(), field.divideElements(j.getY(), j.getX()));
+
+            FiniteField.Element xL = field.addElements(field.addElements(field.powerElement(slope, 2), slope), a);
+            FiniteField.Element yL = field.addElements(j.getX(), field.multiplyElements(field.addElements(slope, Polynomial.ONE), xL));
+
+            return new Point(xL, yL);
+        }
+
     }
 
     public Point subtractPoint(Point first, Point second) {
@@ -78,7 +89,7 @@ public class EllipticCurve {
     public Point getNegativePoint(Point point) {
         Point result = new Point();
         result.setX(point.getX());
-        result.setY(point.getX() + point.getY());
+        result.setY(field.addElements(point.getX(), point.getY()));
         return result;
     }
 
@@ -90,19 +101,19 @@ public class EllipticCurve {
         this.m = m;
     }
 
-    public int getA() {
+    public FiniteField.Element getA() {
         return a;
     }
 
-    public void setA(int a) {
+    public void setA(FiniteField.Element a) {
         this.a = a;
     }
 
-    public int getB() {
+    public FiniteField.Element getB() {
         return b;
     }
 
-    public void setB(int b) {
+    public void setB(FiniteField.Element b) {
         this.b = b;
     }
 
@@ -128,13 +139,5 @@ public class EllipticCurve {
 
     public void setN(int n) {
         this.n = n;
-    }
-
-    public int getNumberOfPoints() {
-        return numberOfPoints;
-    }
-
-    public void setNumberOfPoints(int numberOfPoints) {
-        this.numberOfPoints = numberOfPoints;
     }
 }
