@@ -14,9 +14,10 @@ public class GeneratorTest {
 
     @Test
     public void generator() {
-        Polynomial irreducible = Polynomial.createIrreducible(8L);
+        Polynomial irreducible = Polynomial.createIrreducible(4L);
         log.debug("irreducible " + irreducible.toBinaryString());
         GeneratorPolynomial generator = GeneratorPolynomial.findGenerator(irreducible);
         log.info("Generator: " + generator.toBinaryString() + " for polynomial: " + irreducible.toBinaryString());
+        log.info("Generator storage size: " + generator.getGeneratorPowers().size());
     }
 }

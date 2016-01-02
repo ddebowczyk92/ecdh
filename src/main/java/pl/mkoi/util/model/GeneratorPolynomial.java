@@ -27,8 +27,6 @@ public class GeneratorPolynomial extends Polynomial {
 
         long powersNumber = (long) (Math.pow(modPolynomial.getDegree(), 2) - 1);
 
-        long iterator = 0;
-
         while (generator.toBigInteger().compareTo(modPolynomial.toBigInteger()) < 0) {
             while (power.compareTo(BigInteger.valueOf(powersNumber)) <= 0) {
 
@@ -38,8 +36,7 @@ public class GeneratorPolynomial extends Polynomial {
                     power = BigInteger.ZERO;
                     break;
                 } else {
-                    generatorStore.put(iterator, polynomialPow);
-                    iterator++;
+                    generatorStore.put(power.longValue(), polynomialPow);
                     power = power.add(BigInteger.ONE);
                 }
             }
@@ -49,7 +46,7 @@ public class GeneratorPolynomial extends Polynomial {
                 generatorLong += 1L;
                 generator = Polynomial.createFromLong(generatorLong);
                 generatorStore = HashBiMap.create();
-                iterator = 0;
+                power = BigInteger.ZERO;
             }
         }
         throw new NoSuchElementException();
