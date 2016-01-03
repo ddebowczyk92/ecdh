@@ -56,11 +56,22 @@ public class GeneratorPolynomial extends Polynomial {
         return generatorPowers;
     }
 
-    public Polynomial getGeneratorPower(long power) {
-        return this.generatorPowers.get(power);
-    }
-
     public void setGeneratorPowers(HashBiMap<Long, Polynomial> generatorPowers) {
         this.generatorPowers = generatorPowers;
+    }
+
+    public Polynomial getGeneratorPower(long power) {
+
+        Polynomial poly = getGeneratorPowers().get(power);
+
+        if (poly != null) {
+            return poly;
+        } else if (power == 0) {
+            Long key = this.generatorPowers.inverse().get(Polynomial.ONE);
+            return generatorPowers.get(key);
+        }
+
+
+        return this.generatorPowers.get(power);
     }
 }

@@ -16,7 +16,7 @@ public class FiniteFieldOperations {
     @Test
     public void finiteFieldOperationTest() {
 
-        long m = 4;
+        long m = 16;
 
         Polynomial irreducible;
         GeneratorPolynomial generator;
@@ -59,11 +59,11 @@ public class FiniteFieldOperations {
 
         FiniteField.Element result = finiteField.multiplyElements(el1, el2);
 
-        assert result.getPolynomial().equals(list.get(0).getKey()) && result.getOrderNumber().equals(list.get(0).getValue());
+        assert result.getPolynomial().equals(list.get(0).getValue()) && result.getOrderNumber().equals(list.get(0).getKey());
 
         result = finiteField.divideElements(el1, el2);
 
-        assert result.getPolynomial().equals(list.get(2).getKey()) && result.getOrderNumber().equals(list.get(2).getValue());
+        assert result.getPolynomial().equals(list.get(2).getValue()) && result.getOrderNumber().equals(list.get(2).getKey());
     }
 
 }

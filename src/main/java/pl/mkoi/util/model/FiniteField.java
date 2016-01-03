@@ -13,7 +13,7 @@ public class FiniteField {
 
     public FiniteField(GeneratorPolynomial generator, int m) {
         this.generator = generator;
-        this.m = StrictMath.pow(2, m) - 1;
+        this.m = m;
     }
 
 
