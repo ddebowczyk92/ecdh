@@ -93,6 +93,33 @@ public class EllipticCurve {
         return result;
     }
 
+    /**
+     * check is based on generator polynomial powering
+     * y^2 + xy = x^3 + ax^2 + b
+     *
+     * @param point
+     * @return
+     */
+    public static boolean checkIfPointSatisfiesEquation(EllipticCurve curve, GeneratorPolynomial generatorPolynomial, Point point) {
+        long m = generatorPolynomial.getGeneratorPowers().size() - 1;
+        long firstPower = (point.getY().getOrderNumber() * 2) % m;
+        long secondPower = (point.getY().getOrderNumber() + point.getX().getOrderNumber()) % m;
+        long thirdPower = (point.getX().getOrderNumber() * 3) % m;
+        long fourthPower = (curve.getA().getOrderNumber() + (point.getX().getOrderNumber() * 2)) % m;
+
+        Polynomial firstElement = generatorPolynomial.getGeneratorPower(firstPower);
+        Polynomial secondElement = generatorPolynomial.getGeneratorPower(secondPower);
+        Polynomial thirdElement = generatorPolynomial.getGeneratorPower(thirdPower);
+        Polynomial fourthElement = generatorPolynomial.getGeneratorPower(fourthPower);
+        Polynomial fifthElement = curve.getB().getPolynomial();
+
+        Polynomial leftEquationSide = firstElement.xor(secondElement);
+        Polynomial rightEquationSide = thirdElement.xor(fourthElement).xor(fifthElement);
+
+        return leftEquationSide.equals(rightEquationSide);
+
+    }
+
     public int getM() {
         return m;
     }

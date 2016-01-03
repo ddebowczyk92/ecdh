@@ -56,6 +56,10 @@ public class GeneratorPolynomial extends Polynomial {
         return generatorPowers;
     }
 
+    public Polynomial getGeneratorPower(long power) {
+        return this.generatorPowers.get(power);
+    }
+
     public void setGeneratorPowers(HashBiMap<Long, Polynomial> generatorPowers) {
         this.generatorPowers = generatorPowers;
     }

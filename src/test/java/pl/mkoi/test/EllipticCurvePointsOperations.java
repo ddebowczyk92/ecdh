@@ -2,6 +2,7 @@ package pl.mkoi.test;
 
 import com.google.common.collect.HashBiMap;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 import pl.mkoi.util.model.*;
 
@@ -26,7 +27,7 @@ public class EllipticCurvePointsOperations {
 
         Polynomial irreducible = Polynomial.createFromLong(11L);
 
-        assert irreducible.toBinaryString().equals("1011");
+        Assert.assertEquals(irreducible.toBinaryString(), "1011");
 
         FiniteField.Element x1 = new FiniteField.Element(2L, powers.get(2L));
         FiniteField.Element y1 = new FiniteField.Element(6L, powers.get(6L));
@@ -34,13 +35,20 @@ public class EllipticCurvePointsOperations {
         FiniteField.Element x2 = new FiniteField.Element(5L, powers.get(5L));
         FiniteField.Element y2 = new FiniteField.Element(5L, powers.get(5L));
 
+        FiniteField.Element x3 = new FiniteField.Element(3L, powers.get(3L));
+        FiniteField.Element y3 = new FiniteField.Element(6L, powers.get(6L));
+
         FiniteField finiteField = new FiniteField(generator, 3);
 
         EllipticCurve curve = new EllipticCurve(new FiniteField.Element(2L, powers.get(2L)), new FiniteField.Element(6L, powers.get(6L)), finiteField, null, irreducible);
 
+        Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, generator, new Point(x1, y1)));
+        Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, generator, new Point(x2, y2)));
+        Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve,generator, new Point(x3, y3)));
+
         Point result = curve.addPoint(new Point(x1, y1), new Point(x2, y2));
 
-        assert result.getX().getOrderNumber().equals(3L) && result.getY().getOrderNumber().equals(6L);
+        Assert.assertTrue( result.getX().getOrderNumber().equals(3L) && result.getY().getOrderNumber().equals(6L));
 
         curve = new EllipticCurve(new FiniteField.Element(2L, powers.get(2L)), new FiniteField.Element(6L, powers.get(6L)), finiteField, null, irreducible);
 
@@ -49,7 +57,7 @@ public class EllipticCurvePointsOperations {
 
         result = curve.addPoint(new Point(x1, y1), new Point(x1, y1));
 
-        assert result.getX().getOrderNumber() == 2 && result.getY().getOrderNumber() == 3;
+       Assert.assertTrue( result.getX().getOrderNumber() == 2 && result.getY().getOrderNumber() == 3);
     }
 
 
