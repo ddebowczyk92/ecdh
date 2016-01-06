@@ -11,12 +11,10 @@ import java.util.Random;
  */
 public class Polynomial {
 
-    private final static Logger log = Logger.getLogger(Polynomial.class);
-
     public static final Polynomial X = Polynomial.createFromLong(2L);
-
     public static final Polynomial ONE = Polynomial.createFromLong(1L);
-
+    public static final Polynomial ZERO = Polynomial.createFromLong(0L);
+    private final static Logger log = Logger.getLogger(Polynomial.class);
     private BitSet degrees;
 
     public Polynomial(BitSet degrees) {
@@ -25,22 +23,6 @@ public class Polynomial {
 
     public Polynomial(Polynomial polynomial) {
         this.setDegrees((BitSet) polynomial.getDegrees().clone());
-    }
-
-    public BitSet getDegrees() {
-        return degrees;
-    }
-
-    public void setDegrees(BitSet degrees) {
-        this.degrees = degrees;
-    }
-
-    public String toBinaryString() {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = this.degrees.length() - 1; i >= 0; i--) {
-            buffer.append(this.degrees.get(i) ? 1 : 0);
-        }
-        return buffer.toString();
     }
 
     public static Polynomial createIrreducible(long degree) {
@@ -89,6 +71,22 @@ public class Polynomial {
         }
         degrees.set((int) degree);
         return new Polynomial(degrees);
+    }
+
+    public BitSet getDegrees() {
+        return degrees;
+    }
+
+    public void setDegrees(BitSet degrees) {
+        this.degrees = degrees;
+    }
+
+    public String toBinaryString() {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = this.degrees.length() - 1; i >= 0; i--) {
+            buffer.append(this.degrees.get(i) ? 1 : 0);
+        }
+        return buffer.toString();
     }
 
     public Polynomial or(Polynomial polynomial) {

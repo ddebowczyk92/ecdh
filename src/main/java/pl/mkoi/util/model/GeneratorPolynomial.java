@@ -25,7 +25,7 @@ public class GeneratorPolynomial extends Polynomial {
         Polynomial generator = Polynomial.createFromLong(generatorLong);
         HashBiMap<Long, Polynomial> generatorStore = HashBiMap.create();
 
-        long powersNumber = (long) (Math.pow(modPolynomial.getDegree(), 2) - 1);
+        long powersNumber = (long) Math.pow(2, modPolynomial.getDegree()) - 1;
 
         while (generator.toBigInteger().compareTo(modPolynomial.toBigInteger()) < 0) {
             while (power.compareTo(BigInteger.valueOf(powersNumber)) <= 0) {

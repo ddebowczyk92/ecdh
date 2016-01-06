@@ -1,7 +1,10 @@
 package pl.mkoi.util;
 
 import org.apache.log4j.Logger;
-import pl.mkoi.util.model.*;
+import pl.mkoi.util.model.EllipticCurve;
+import pl.mkoi.util.model.FiniteField;
+import pl.mkoi.util.model.GeneratorPolynomial;
+import pl.mkoi.util.model.Point;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -19,8 +22,7 @@ public class PointGenerator {
         while (true) {
             FiniteField.Element x = getRandomElement(polynomial);
             FiniteField.Element y = getRandomElement(polynomial);
-            log.debug(x.toString());
-            log.debug(y.toString());
+            log.debug("x " + x.toString() + "y " + y.toString());
             Point point = new Point(x, y);
             if (EllipticCurve.checkIfPointSatisfiesEquation(curve, polynomial, point)) return point;
         }
@@ -29,11 +31,12 @@ public class PointGenerator {
     public static int getPointOrder(EllipticCurve curve, Point point) {
         Point pointCopy = new Point(point.getX(), point.getY());
         BigInteger scalar = BigInteger.ONE;
-        do{
+        do {
             pointCopy.multiplyByScalar(scalar, curve);
             scalar.add(BigInteger.ONE);
-            log.debug("point x: "+ point.getX().getOrderNumber() + "point y: " + point.getX().getOrderNumber());
-            log.debug("multiplicated point x: "+ pointCopy.getX().getOrderNumber() + "point y: " + pointCopy.getX().getOrderNumber());
+            log.debug("point x: " + point.getX().getOrderNumber() + "point y: " + point.getY().getOrderNumber());
+            log.debug("multiplicated point x: " + pointCopy.getX().getOrderNumber() + "point y: " + pointCopy.getY().getOrderNumber());
+            log.debug(scalar);
         } while (!point.equals(pointCopy));
 
         return scalar.intValue();

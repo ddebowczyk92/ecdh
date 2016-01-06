@@ -2,6 +2,7 @@ package pl.mkoi.test;
 
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 import pl.mkoi.util.model.FiniteField;
 import pl.mkoi.util.model.GeneratorPolynomial;
@@ -47,23 +48,40 @@ public class FiniteFieldOperations {
             }
         });
 
-        for (Map.Entry<Long, Polynomial> polynomialLongEntry : list) {
-            log.debug(polynomialLongEntry.getValue().toString() + " " + polynomialLongEntry.getValue().toBinaryString());
-        }
 
         int firstElement = 9;
         int secondElement = 7;
 
-        FiniteField.Element el1 = new FiniteField.Element((long) firstElement, list.get(firstElement).getValue());
-        FiniteField.Element el2 = new FiniteField.Element((long) secondElement, list.get(secondElement).getValue());
+        FiniteField.Element element1 = new FiniteField.Element((long) firstElement, list.get(firstElement).getValue());
+        FiniteField.Element element2 = new FiniteField.Element((long) secondElement, list.get(secondElement).getValue());
+        FiniteField.Element result = finiteField.multiplyElements(element1, element2);
 
-        FiniteField.Element result = finiteField.multiplyElements(el1, el2);
+        Assert.assertTrue(result.getPolynomial().equals(list.get(0).getValue()) && result.getOrderNumber().equals(list.get(0).getKey()));
 
-        assert result.getPolynomial().equals(list.get(0).getValue()) && result.getOrderNumber().equals(list.get(0).getKey());
 
-        result = finiteField.divideElements(el1, el2);
+        result = finiteField.divideElements(element1, element2);
 
-        assert result.getPolynomial().equals(list.get(2).getValue()) && result.getOrderNumber().equals(list.get(2).getKey());
+        Assert.assertTrue(result.getPolynomial().equals(list.get(2).getValue()) && result.getOrderNumber().equals(list.get(2).getKey()));
+
+        FiniteField.Element zeroresult = finiteField.addElements(element1, FiniteField.ZERO_ELEMENT);
+        Assert.assertTrue(zeroresult.equals(element1));
+
+        zeroresult = finiteField.addElements(FiniteField.ZERO_ELEMENT, element1);
+        Assert.assertTrue(zeroresult.equals(element1));
+
+        zeroresult = finiteField.addElements(element1, element1);
+        Assert.assertTrue(zeroresult.equals(FiniteField.ZERO_ELEMENT));
+
+        zeroresult = finiteField.multiplyElements(element1, FiniteField.ZERO_ELEMENT);
+        Assert.assertTrue(zeroresult.equals(FiniteField.ZERO_ELEMENT));
+
+        zeroresult = finiteField.multiplyElements(FiniteField.ZERO_ELEMENT, element1);
+        Assert.assertTrue(zeroresult.equals(FiniteField.ZERO_ELEMENT));
+
+        zeroresult = finiteField.divideElements(FiniteField.ZERO_ELEMENT, element1);
+        Assert.assertTrue(zeroresult.equals(FiniteField.ZERO_ELEMENT));
+
+
     }
 
 }
