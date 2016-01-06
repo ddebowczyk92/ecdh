@@ -23,5 +23,8 @@ public class PointGeneratorTest {
         Point point = PointGenerator.generatePoint(curve, generator);
 
         log.info("point x: " + point.getX().getPolynomial().toBinaryString() + " y: " + point.getY().getPolynomial().toBinaryString());
+
+        int pointOrder = PointGenerator.getPointOrder(curve, point);
+        log.info("point order: " + pointOrder);
     }
 }

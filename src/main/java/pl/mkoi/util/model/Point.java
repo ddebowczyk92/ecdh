@@ -3,7 +3,7 @@ package pl.mkoi.util.model;
 import java.math.BigInteger;
 
 
-public class Point {
+public class Point implements Cloneable {
     private FiniteField.Element x;
     private FiniteField.Element y;
 
@@ -44,11 +44,17 @@ public class Point {
         this.y = point.getY();
     }
 
+
     @Override
     public boolean equals(Object obj) {
         Point point = (Point) obj;
 
         return (point.getX().getOrderNumber().equals(this.getX().getOrderNumber()))
                 && (point.getY().getOrderNumber().equals(this.getY().getOrderNumber()));
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

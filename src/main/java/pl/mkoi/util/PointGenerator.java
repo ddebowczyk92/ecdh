@@ -3,6 +3,7 @@ package pl.mkoi.util;
 import org.apache.log4j.Logger;
 import pl.mkoi.util.model.*;
 
+import java.math.BigInteger;
 import java.util.Random;
 
 /**
@@ -23,6 +24,19 @@ public class PointGenerator {
             Point point = new Point(x, y);
             if (EllipticCurve.checkIfPointSatisfiesEquation(curve, polynomial, point)) return point;
         }
+    }
+
+    public static int getPointOrder(EllipticCurve curve, Point point) {
+        Point pointCopy = new Point(point.getX(), point.getY());
+        BigInteger scalar = BigInteger.ONE;
+        do{
+            pointCopy.multiplyByScalar(scalar, curve);
+            scalar.add(BigInteger.ONE);
+            log.debug("point x: "+ point.getX().getOrderNumber() + "point y: " + point.getX().getOrderNumber());
+            log.debug("multiplicated point x: "+ pointCopy.getX().getOrderNumber() + "point y: " + pointCopy.getX().getOrderNumber());
+        } while (!point.equals(pointCopy));
+
+        return scalar.intValue();
     }
 
     private static FiniteField.Element getRandomElement(GeneratorPolynomial generatorPolynomial) {
