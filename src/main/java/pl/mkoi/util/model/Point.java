@@ -49,12 +49,14 @@ public class Point implements Cloneable {
     public boolean equals(Object obj) {
         Point point = (Point) obj;
 
-        return (point.getX().getOrderNumber().equals(this.getX().getOrderNumber()))
-                && (point.getY().getOrderNumber().equals(this.getY().getOrderNumber()));
+        return (point.getX().getOrderNumber().intValue() == this.getX().getOrderNumber().intValue() )
+                        && (point.getY().getOrderNumber().intValue() == this.getY().getOrderNumber().intValue());
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public int hashCode() {
+        int result = x.hashCode();
+        result = 31 * result + y.hashCode();
+        return result;
     }
 }

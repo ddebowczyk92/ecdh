@@ -219,7 +219,6 @@ public class Polynomial {
 
     }
 
-
     @Override
     public int hashCode() {
         return degrees.hashCode();

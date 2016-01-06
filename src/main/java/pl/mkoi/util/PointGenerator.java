@@ -7,7 +7,9 @@ import pl.mkoi.util.model.GeneratorPolynomial;
 import pl.mkoi.util.model.Point;
 
 import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Created by DominikD on 2016-01-02.
@@ -29,17 +31,20 @@ public class PointGenerator {
     }
 
     public static int getPointOrder(EllipticCurve curve, Point point) {
-        Point pointCopy = new Point(point.getX(), point.getY());
         BigInteger scalar = BigInteger.ONE;
-        do {
+        Point pointCopy = new Point(point.getX(), point.getY());
+        Set<Point> multiplications = new HashSet<>();
+        while (true) {
             pointCopy.multiplyByScalar(scalar, curve);
-            scalar.add(BigInteger.ONE);
-            log.debug("point x: " + point.getX().getOrderNumber() + "point y: " + point.getY().getOrderNumber());
-            log.debug("multiplicated point x: " + pointCopy.getX().getOrderNumber() + "point y: " + pointCopy.getY().getOrderNumber());
-            log.debug(scalar);
-        } while (!point.equals(pointCopy));
-
-        return scalar.intValue();
+            Point newPoint = new Point(pointCopy.getX(), pointCopy.getY());
+            if (multiplications.contains(newPoint)) break;
+            else {
+                multiplications.add(newPoint);
+                log.debug("x: " + newPoint.getX().getOrderNumber() + " y: " + newPoint.getY().getOrderNumber());
+                log.debug("hashcode: " + newPoint.hashCode());
+            }
+        }
+        return multiplications.size() + 1;
     }
 
     private static FiniteField.Element getRandomElement(GeneratorPolynomial generatorPolynomial) {

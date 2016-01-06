@@ -106,5 +106,10 @@ public class FiniteField {
             Element element = (Element) obj;
             return polynomial.equals(element.polynomial) && orderNumber.equals(element.getOrderNumber());
         }
+
+        @Override
+        public int hashCode() {
+            return orderNumber.hashCode();
+        }
     }
 }

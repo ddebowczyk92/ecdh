@@ -34,4 +34,15 @@ public class PointGeneratorTest {
         int pointOrder = PointGenerator.getPointOrder(curve, point);
         log.info("point order: " + pointOrder);
     }
+
+    @Test
+    public void pointGeneratorTest2() {
+        Polynomial irreducible = Polynomial.createFromLong(19L);
+        log.debug("irreducible " + irreducible.toBinaryString());
+        GeneratorPolynomial gp = GeneratorPolynomial.findGenerator(irreducible);
+        for(Long key: gp.getGeneratorPowers().keySet()){
+            log.debug("gen: " + gp.getGeneratorPowers().get(key).toBinaryString());
+        }
+
+    }
 }
