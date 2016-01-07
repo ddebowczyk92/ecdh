@@ -4,32 +4,32 @@ import java.math.BigInteger;
 
 
 public class Point implements Cloneable {
-    private FiniteField.Element x;
-    private FiniteField.Element y;
+    private Polynomial x;
+    private Polynomial y;
 
     public Point() {
-        this.x = new FiniteField.Element(0l, Polynomial.ONE);
-        this.y = new FiniteField.Element(0l, Polynomial.ONE);
+        this.x = Polynomial.ONE;
+        this.y = Polynomial.ONE;
     }
 
-    public Point(FiniteField.Element x, FiniteField.Element y) {
+    public Point(Polynomial x, Polynomial y) {
         this.x = x;
         this.y = y;
     }
 
-    public FiniteField.Element getX() {
+    public Polynomial getX() {
         return x;
     }
 
-    public void setX(FiniteField.Element x) {
+    public void setX(Polynomial x) {
         this.x = x;
     }
 
-    public FiniteField.Element getY() {
+    public Polynomial getY() {
         return y;
     }
 
-    public void setY(FiniteField.Element y) {
+    public void setY(Polynomial y) {
         this.y = y;
     }
 
@@ -49,8 +49,7 @@ public class Point implements Cloneable {
     public boolean equals(Object obj) {
         Point point = (Point) obj;
 
-        return (point.getX().getOrderNumber().intValue() == this.getX().getOrderNumber().intValue() )
-                        && (point.getY().getOrderNumber().intValue() == this.getY().getOrderNumber().intValue());
+        return this.x.equals(point.x) && this.y.equals(point.y);
     }
 
     @Override
@@ -58,5 +57,10 @@ public class Point implements Cloneable {
         int result = x.hashCode();
         result = 31 * result + y.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Point: x: " + x.toString() + " y: " + y.toString();
     }
 }

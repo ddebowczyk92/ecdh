@@ -6,60 +6,62 @@ import org.junit.Assert;
 import org.junit.Test;
 import pl.mkoi.util.model.*;
 
-import java.math.BigInteger;
-
 public class EllipticCurvePointsOperations {
 
     private final static Logger log = Logger.getLogger(EllipticCurvePointsOperations.class);
 
+
     @Test
-    public void pointsOperationTest() {
+    public void morePointsOperationTest() {
 
-        GeneratorPolynomial generator = new GeneratorPolynomial(Polynomial.createFromLong(2), null);
-        Polynomial irreducible = Polynomial.createFromLong(11L);
 
-        HashBiMap<Long, Polynomial> powers = HashBiMap.create(7);
-        powers.put(1L, generator.modPow(BigInteger.valueOf(1), irreducible));
-        powers.put(2L, generator.modPow(BigInteger.valueOf(2), irreducible));
-        powers.put(3L, generator.modPow(BigInteger.valueOf(3), irreducible));
-        powers.put(4L, generator.modPow(BigInteger.valueOf(4), irreducible));
-        powers.put(5L, generator.modPow(BigInteger.valueOf(5), irreducible));
-        powers.put(6L, generator.modPow(BigInteger.valueOf(6), irreducible));
-        powers.put(7L, generator.modPow(BigInteger.valueOf(7), irreducible));
+        Polynomial irreducible = Polynomial.createFromLong(19L);
+        GeneratorPolynomial generator = GeneratorPolynomial.findGenerator(irreducible);
 
-        generator.setGeneratorPowers(powers);
+        HashBiMap<Long, Polynomial> powers = generator.getGeneratorPowers();
 
-        FiniteField.Element x1 = new FiniteField.Element(2L, powers.get(2L));
-        FiniteField.Element y1 = new FiniteField.Element(6L, powers.get(6L));
+        FiniteField field = new FiniteField(generator, 4, irreducible);
 
-        FiniteField.Element x2 = new FiniteField.Element(5L, powers.get(5L));
-        FiniteField.Element y2 = new FiniteField.Element(5L, powers.get(5L));
+        Polynomial a = Polynomial.createFromLong(8L);
+        Polynomial b = Polynomial.createFromLong(9L);
 
-        FiniteField.Element x3 = new FiniteField.Element(3L, powers.get(3L));
-        FiniteField.Element y3 = new FiniteField.Element(6L, powers.get(6L));
+        System.out.println("Polynomial " + irreducible.toBinaryString());
+        System.out.println("Generator " + generator.toBinaryString());
+        System.out.println("CURVE PARAMETERS: a: " + a + " CURVE PARAMETERS: b: " + b);
 
-        FiniteField finiteField = new FiniteField(generator, 7);
+        EllipticCurve curve = new EllipticCurve(a, b, field, null, irreducible);
 
-        EllipticCurve curve = new EllipticCurve(new FiniteField.Element(2L, powers.get(2L)), new FiniteField.Element(6L, powers.get(6L)), finiteField, null, irreducible);
+        //curve is defined, operations below
 
-        Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, generator, new Point(x1, y1)));
-        Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, generator, new Point(x2, y2)));
-        Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, generator, new Point(x3, y3)));
+        Polynomial x1 = Polynomial.createFromLong(2L);
+        Polynomial y1 = Polynomial.createFromLong(15L);
 
-        Point result = curve.addPoint(new Point(x1, y1), new Point(x2, y2));
+        Polynomial x2 = Polynomial.createFromLong(12L);
+        Polynomial y2 = Polynomial.createFromLong(12L);
 
-        Assert.assertTrue(result.getX().getOrderNumber().equals(3L) && result.getY().getOrderNumber().equals(6L));
+        Point point = curve.addPoint(new Point(x1, y1), new Point(x2, y2));
 
-        curve = new EllipticCurve(new FiniteField.Element(2L, powers.get(2L)), new FiniteField.Element(6L, powers.get(6L)), finiteField, null, irreducible);
+        System.out.println(x1.toString());
+        System.out.println(y1.toString());
 
-        x1 = new FiniteField.Element(3L, powers.get(3L));
-        y1 = new FiniteField.Element(4L, powers.get(4L));
+        System.out.println(x2.toString());
+        System.out.println(y2.toString());
 
-        result = curve.addPoint(new Point(x1, y1), new Point(x1, y1));
+        System.out.println(point.toString());
 
-        Assert.assertTrue(result.getX().getOrderNumber() == 2 && result.getY().getOrderNumber() == 3);
+        System.out.println("---------------------------------------");
 
-        log.info("TEST PASSED");
+        x1 = Polynomial.createFromLong(2L);
+        y1 = Polynomial.createFromLong(15L);
+        point = curve.addPoint(new Point(x1, y1), new Point(x1, y1));
+
+        System.out.println(x1.toString());
+        System.out.println(y1.toString());
+
+        System.out.println(point.toString());
+
+        Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, new Point(x1, y1)));
+        Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, new Point(x2, y2)));
     }
 
 

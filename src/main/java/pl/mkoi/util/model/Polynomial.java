@@ -223,4 +223,9 @@ public class Polynomial {
     public int hashCode() {
         return degrees.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return toBinaryString();
+    }
 }

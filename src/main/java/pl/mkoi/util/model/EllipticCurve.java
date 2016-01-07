@@ -1,5 +1,7 @@
 package pl.mkoi.util.model;
 
+import java.math.BigInteger;
+
 /**
  * The equation of the elliptic curve on a binary field F2m is y2 + xy = x3 + ax2 + b, where b ≠ 0.
  * Here the elements of the finite field are integers of length at most m bits.
@@ -15,12 +17,12 @@ public class EllipticCurve {
     /**
      * Curve equation parameter
      */
-    private FiniteField.Element a;
+    private Polynomial a;
 
     /**
      * Curve equation parameter
      */
-    private FiniteField.Element b;
+    private Polynomial b;
 
     private Point generatorPoint;
 
@@ -43,7 +45,7 @@ public class EllipticCurve {
      * @param gPoint                generator point
      * @param irreduciblePolynomial polynomial used for modular arithmetic
      */
-    public EllipticCurve(FiniteField.Element a, FiniteField.Element b, FiniteField field, Point gPoint, Polynomial irreduciblePolynomial) {
+    public EllipticCurve(Polynomial a, Polynomial b, FiniteField field, Point gPoint, Polynomial irreduciblePolynomial) {
         this.a = a;
         this.b = b;
         this.field = field;
@@ -56,21 +58,18 @@ public class EllipticCurve {
      * check is based on generator polynomial powering
      * y^2 + xy = x^3 + ax^2 + b
      *
-     * @param point
-     * @return
+     * @param point is checked in this function
+     * @return if points belongs to the curve
      */
-    public static boolean checkIfPointSatisfiesEquation(EllipticCurve curve, GeneratorPolynomial generatorPolynomial, Point point) {
-        long m = generatorPolynomial.getGeneratorPowers().size();
-        long firstPower = (point.getY().getOrderNumber() * 2) % m;
-        long secondPower = (point.getY().getOrderNumber() + point.getX().getOrderNumber()) % m;
-        long thirdPower = (point.getX().getOrderNumber() * 3) % m;
-        long fourthPower = (curve.getA().getOrderNumber() + (point.getX().getOrderNumber() * 2)) % m;
+    public static boolean checkIfPointSatisfiesEquation(EllipticCurve curve, Point point) {
+        Polynomial x = point.getX();
+        Polynomial y = point.getY();
 
-        Polynomial firstElement = generatorPolynomial.getGeneratorPower(firstPower);
-        Polynomial secondElement = generatorPolynomial.getGeneratorPower(secondPower);
-        Polynomial thirdElement = generatorPolynomial.getGeneratorPower(thirdPower);
-        Polynomial fourthElement = generatorPolynomial.getGeneratorPower(fourthPower);
-        Polynomial fifthElement = curve.getB().getPolynomial();
+        Polynomial firstElement = y.modPow(BigInteger.valueOf(2L), curve.irreduciblePolynomial);
+        Polynomial secondElement = x.multiply(y).mod(curve.irreduciblePolynomial);
+        Polynomial thirdElement = x.modPow(BigInteger.valueOf(3L), curve.irreduciblePolynomial);
+        Polynomial fourthElement = curve.getField().multiplyElements(curve.a, x.modPow(BigInteger.valueOf(2), curve.irreduciblePolynomial));
+        Polynomial fifthElement = curve.b;
 
         Polynomial leftEquationSide = firstElement.xor(secondElement);
         Polynomial rightEquationSide = thirdElement.xor(fourthElement).xor(fifthElement);
@@ -79,28 +78,23 @@ public class EllipticCurve {
 
     }
 
-    private long getMaxNumberForField() {
-        return (long) StrictMath.pow(2, m);
-    }
-
     /*first J second K*/
     public Point addPoint(Point j, Point k) {
 
         if (!j.equals(k)) {
-            FiniteField.Element slope = field.divideElements(field.addElements(j.getY(), k.getY()), field.addElements(j.getX(), k.getX()));
+            Polynomial slope = field.divideElements(j.getY().xor(k.getY()), j.getX().xor(k.getX()));
 
-            FiniteField.Element slopesSum = field.addElements(field.powerElement(slope, 2), slope);
+            Polynomial slopesSum = field.powerElement(slope, 2).xor(slope);
 
-
-            FiniteField.Element xL = field.addElements(field.addElements(field.addElements(slopesSum, j.getX()), k.getX()), a);
-            FiniteField.Element yL = field.addElements(field.addElements(field.multiplyElements(slope, field.addElements(j.getX(), xL)), xL), j.getY());
+            Polynomial xL = slopesSum.xor(j.getX()).xor(k.getX()).xor(a);
+            Polynomial yL = field.multiplyElements(slope, j.getX()).xor(field.multiplyElements(slope, xL)).xor(xL).xor(j.getY());
 
             return new Point(xL, yL);
         } else {
-            FiniteField.Element slope = field.addElements(j.getX(), field.divideElements(j.getY(), j.getX()));
+            Polynomial slope = j.getX().xor(field.divideElements(j.getY(), j.getX()));
 
-            FiniteField.Element xL = field.addElements(field.addElements(field.powerElement(slope, 2), slope), a);
-            FiniteField.Element yL = field.addElements(j.getX(), field.multiplyElements(field.addElements(slope, Polynomial.ONE), xL));
+            Polynomial xL = field.powerElement(slope, 2).xor(slope).xor(a);
+            Polynomial yL = field.powerElement(j.getX(), 2).xor(field.multiplyElements(slope, xL)).xor(xL);
 
             return new Point(xL, yL);
         }
@@ -116,7 +110,7 @@ public class EllipticCurve {
     public Point getNegativePoint(Point point) {
         Point result = new Point();
         result.setX(point.getX());
-        result.setY(field.addElements(point.getX(), point.getY()));
+        result.setY(point.getX().xor(point.getY()));
         return result;
     }
 
@@ -128,19 +122,19 @@ public class EllipticCurve {
         this.m = m;
     }
 
-    public FiniteField.Element getA() {
+    public Polynomial getA() {
         return a;
     }
 
-    public void setA(FiniteField.Element a) {
+    public void setA(Polynomial a) {
         this.a = a;
     }
 
-    public FiniteField.Element getB() {
+    public Polynomial getB() {
         return b;
     }
 
-    public void setB(FiniteField.Element b) {
+    public void setB(Polynomial b) {
         this.b = b;
     }
 
@@ -166,5 +160,9 @@ public class EllipticCurve {
 
     public void setN(int n) {
         this.n = n;
+    }
+
+    public FiniteField getField() {
+        return field;
     }
 }

@@ -14,25 +14,28 @@ public class PointGeneratorTest {
 
     @Test
     public void pointGeneratorTest() {
-        long mParam = 5L;
-        Polynomial irreducible = Polynomial.createIrreducible(mParam);
+        int i = 0;
 
-        log.debug("irreducible " + irreducible.toBinaryString());
+        while (true) {
+            long mParam = 5L;
+            Polynomial irreducible = Polynomial.createIrreducible(mParam);
+//        log.debug("irreducible " + irreducible.toBinaryString());
 
-        GeneratorPolynomial generator = GeneratorPolynomial.findGenerator(irreducible);
-
-        log.info("Generator storage size: " + generator.getGeneratorPowers().size());
+            GeneratorPolynomial generator = GeneratorPolynomial.findGenerator(irreducible);
+//        log.info("Generator storage size: " + generator.getGeneratorPowers().size());
 //
-        FiniteField finiteField = new FiniteField(generator, (int) mParam);
+            FiniteField finiteField = new FiniteField(generator, (int) mParam, irreducible);
+            EllipticCurve curve = new EllipticCurve(generator.getGeneratorPower(2L), generator.getGeneratorPower(6L), finiteField, null, irreducible);
+            Point point = PointGenerator.generatePoint(curve, generator);
 
-        EllipticCurve curve = new EllipticCurve(new FiniteField.Element(2L, generator.getGeneratorPower(2L)), new FiniteField.Element(6L, generator.getGeneratorPower(6L)), finiteField, null, irreducible);
+//        log.info("point x: " + point.getX().toBinaryString() + " y: " + point.getY().toBinaryString());
 
-        Point point = PointGenerator.generatePoint(curve, generator);
+            int pointOrder = PointGenerator.getPointOrder(curve, point);
+            log.info("point order: " + i + " -  " + pointOrder);
 
-        log.info("point x: " + point.getX().getPolynomial().toBinaryString() + " y: " + point.getY().getPolynomial().toBinaryString());
+            i++;
 
-        int pointOrder = PointGenerator.getPointOrder(curve, point);
-        log.info("point order: " + pointOrder);
+        }
     }
 
     @Test
@@ -43,6 +46,5 @@ public class PointGeneratorTest {
         for(Long key: gp.getGeneratorPowers().keySet()){
             log.debug("gen: " + gp.getGeneratorPowers().get(key).toBinaryString());
         }
-
     }
 }

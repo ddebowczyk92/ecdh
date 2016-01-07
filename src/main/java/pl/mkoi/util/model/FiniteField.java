@@ -1,115 +1,73 @@
 package pl.mkoi.util.model;
 
-import java.util.Map;
+import java.math.BigInteger;
 
 public class FiniteField {
-    public static final Element ZERO_ELEMENT = new Element(-1L, Polynomial.ZERO);
-    private final double m;
+
     private final GeneratorPolynomial generator;
+    private Polynomial irreducible;
+    private double m;
 
     private FiniteField() {
         m = 0;
         generator = null;
     }
 
-    public FiniteField(GeneratorPolynomial generator, int m) {
+    public FiniteField(GeneratorPolynomial generator, int m, Polynomial irreducible) {
         this.generator = generator;
-        this.m = (int) StrictMath.pow(m, 2);
+        this.m = (int) StrictMath.pow(2, m);
+        this.irreducible = irreducible;
     }
 
-
-    public Element addElements(Element a, Element b) {
-        Polynomial resultPoly = a.polynomial.xor(b.polynomial);
-
-        if (!resultPoly.equals(Polynomial.ZERO)) {
-            return new Element(generator.getGeneratorPowers().inverse().get(resultPoly), resultPoly);
-        } else {
-            return ZERO_ELEMENT;
-        }
+    public Polynomial multiplyElements(Polynomial a, Polynomial b) {
+        return a.multiply(b).mod(irreducible);
     }
 
-    public Element addElements(Element a, Polynomial b) {
-        Polynomial resultPoly = a.polynomial.xor(b);
-        return new Element(generator.getGeneratorPowers().inverse().get(resultPoly), resultPoly);
-    }
-
-    public Element subtractElements(Element a, Element b) {
-        return addElements(a, b);
-    }
-
-    public Element multiplyElements(Element a, Element b) {
-        if (a.getPolynomial().getDegree() <= 0 || b.getPolynomial().getDegree() <= 0)
-            return new Element(-1L, Polynomial.createFromLong(0L));
-
-        long newIndex = (long) ((a.orderNumber + b.orderNumber) % m);
-        return new Element(newIndex, generator.getGeneratorPowers().get(newIndex));
-    }
-
-    public Element powerElement(Element a, int power) {
-        if (a.getPolynomial().getDegree() == -1) {
+    public Polynomial powerElement(Polynomial a, int power) {
+        if (a.getDegree() <= 0) {
             return a;
         } else {
-            long newIndex = (long) (a.getOrderNumber() * power % m);
-            return new Element(newIndex, generator.getGeneratorPowers().get(newIndex));
+            return a.modPow(BigInteger.valueOf(power), irreducible).mod(irreducible);
         }
     }
 
-    public Element divideElements(Element a, Element b) {
-        if (a.getOrderNumber() < 0) {
-            return new Element(-1L, Polynomial.createFromLong(0L));
-        } else if (b.getOrderNumber() < 0) {
-            return a;
-        } else {
-            long newIndex = (long) ((a.orderNumber - b.orderNumber) % m);
-            if (newIndex < 0) newIndex += m;
-            return new Element(newIndex, generator.getGeneratorPowers().get(newIndex));
-
-        }
-
-
+    public Polynomial divideElements(Polynomial a, Polynomial b) {
+        Polynomial polynomial = inverseElement(b);
+        return multiplyElements(a, polynomial);
     }
 
 
-    public static class Element {
-        private Polynomial polynomial;
-        private Long orderNumber;
+    public Polynomial inverseElement(Polynomial a) {
+        Polynomial u = new Polynomial(a);
+        Polynomial v = new Polynomial(irreducible);
+        Polynomial g1 = Polynomial.ONE;
+        Polynomial g2 = Polynomial.ZERO;
 
-        private Element() {
+        int j;
 
+        while (!u.equals(Polynomial.ONE)) {
+            j = u.getDegree() - v.getDegree();
+            if (j < 0) {
+
+                Polynomial temp = u;
+                u = v;
+                v = temp;
+
+                temp = g1;
+                g1 = g2;
+                g2 = temp;
+
+                j = -j;
+            }
+
+            u = u.xor(Polynomial.createFromLong((long) Math.pow(2, j)).multiply(v)).mod(irreducible);
+            g1 = g1.xor(Polynomial.createFromLong((long) Math.pow(2, j)).multiply(g2).mod(irreducible));
         }
 
-        public Element(Long orderNumber, Polynomial polynomial) {
-            this.orderNumber = orderNumber;
-            this.polynomial = polynomial;
-        }
+        return g1;
+    }
 
-        public Element(Map.Entry<Long, Polynomial> polynomialLongEntry) {
-            this.orderNumber = polynomialLongEntry.getKey();
-            this.polynomial = polynomialLongEntry.getValue();
-        }
-
-        public Polynomial getPolynomial() {
-            return polynomial;
-        }
-
-        public Long getOrderNumber() {
-            return orderNumber;
-        }
-
-        @Override
-        public String toString() {
-            return "Finite field element g^" + orderNumber + " " + polynomial.toBinaryString();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            Element element = (Element) obj;
-            return polynomial.equals(element.polynomial) && orderNumber.equals(element.getOrderNumber());
-        }
-
-        @Override
-        public int hashCode() {
-            return orderNumber.hashCode();
-        }
+    public void setM(int m) {
+        this.m = m;
     }
 }
