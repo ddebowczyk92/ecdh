@@ -6,7 +6,7 @@ public class FiniteField {
 
     private final GeneratorPolynomial generator;
     private Polynomial irreducible;
-    private double m;
+    private int m;
 
     private FiniteField() {
         m = 0;
@@ -65,6 +65,10 @@ public class FiniteField {
         }
 
         return g1;
+    }
+
+    public int getM() {
+        return m;
     }
 
     public void setM(int m) {

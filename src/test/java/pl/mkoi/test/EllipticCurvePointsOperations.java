@@ -65,4 +65,30 @@ public class EllipticCurvePointsOperations {
     }
 
 
+    @Test
+    public void calculationStopTest() {
+        int m = 4;
+        Polynomial irreducible = Polynomial.createIrreducible(m);
+        GeneratorPolynomial generator = GeneratorPolynomial.findGenerator(irreducible);
+        FiniteField finiteField = new FiniteField(generator, m, irreducible);
+
+        int a = 4;
+        int b = 14;
+
+        Polynomial polyA = Polynomial.createFromLong(a);
+        Polynomial polyB = Polynomial.createFromLong(b);
+
+        log.info("Points multiplication started for curve A = " + polyA + " B = " + polyB);
+
+        EllipticCurve curve = new EllipticCurve(polyA, polyB, finiteField, null, irreducible);
+
+        curve.addPoint(new Point(polyA, polyB), new Point(polyA, polyB));
+
+        log.info("Points addition finished ");
+
+        log.info("Finished");
+
+    }
+
+
 }

@@ -11,10 +11,6 @@ public class EllipticCurve {
 
     private final FiniteField field;
     /**
-     * F2m <- this m is it
-     */
-    private int m;
-    /**
      * Curve equation parameter
      */
     private Polynomial a;
@@ -82,8 +78,12 @@ public class EllipticCurve {
     public Point addPoint(Point j, Point k) {
 
         if (!j.equals(k)) {
-            Polynomial slope = field.divideElements(j.getY().xor(k.getY()), j.getX().xor(k.getX()));
 
+            if (j.getX().equals(k.getX())) {
+                return new Point(Polynomial.ZERO, Polynomial.ZERO);
+            }
+
+            Polynomial slope = field.divideElements(j.getY().xor(k.getY()), j.getX().xor(k.getX()));
             Polynomial slopesSum = field.powerElement(slope, 2).xor(slope);
 
             Polynomial xL = slopesSum.xor(j.getX()).xor(k.getX()).xor(a);
@@ -91,11 +91,15 @@ public class EllipticCurve {
 
             return new Point(xL, yL);
         } else {
+
+            if (j.getX().equals(Polynomial.ZERO)) {
+                return new Point(Polynomial.ZERO, Polynomial.ZERO);
+            }
+
             Polynomial slope = j.getX().xor(field.divideElements(j.getY(), j.getX()));
 
             Polynomial xL = field.powerElement(slope, 2).xor(slope).xor(a);
             Polynomial yL = field.powerElement(j.getX(), 2).xor(field.multiplyElements(slope, xL)).xor(xL);
-
             return new Point(xL, yL);
         }
 
@@ -115,11 +119,11 @@ public class EllipticCurve {
     }
 
     public int getM() {
-        return m;
+        return field.getM();
     }
 
     public void setM(int m) {
-        this.m = m;
+        field.setM(m);
     }
 
     public Polynomial getA() {
