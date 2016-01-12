@@ -23,4 +23,9 @@ public class KeyPair {
     public void setPublicKey(Point publicKey) {
         this.publicKey = publicKey;
     }
+
+    @Override
+    public String toString() {
+        return "KeyPair:( Private: " + privateKey.longValue() + " ; Public: " + publicKey.getX().toBinaryString() + "," + publicKey.getY().toBinaryString() + ")";
+    }
 }

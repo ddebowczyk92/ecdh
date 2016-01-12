@@ -9,6 +9,7 @@ import java.math.BigInteger;
 public class EllipticCurve {
 
 
+    public static final Point INFINITY = new Point(Polynomial.ZERO, Polynomial.ZERO);
     private final FiniteField field;
     /**
      * Curve equation parameter
@@ -60,7 +61,6 @@ public class EllipticCurve {
     public static boolean checkIfPointSatisfiesEquation(EllipticCurve curve, Point point) {
         Polynomial x = point.getX();
         Polynomial y = point.getY();
-
         Polynomial firstElement = y.modPow(BigInteger.valueOf(2L), curve.irreduciblePolynomial);
         Polynomial secondElement = x.multiply(y).mod(curve.irreduciblePolynomial);
         Polynomial thirdElement = x.modPow(BigInteger.valueOf(3L), curve.irreduciblePolynomial);
@@ -79,9 +79,7 @@ public class EllipticCurve {
 
         if (!j.equals(k)) {
 
-            if (j.getX().equals(k.getX())) {
-                return new Point(Polynomial.ZERO, Polynomial.ZERO);
-            }
+            if (getNegativePoint(j).equals(k) && INFINITY != null) return INFINITY;
 
             Polynomial slope = field.divideElements(j.getY().xor(k.getY()), j.getX().xor(k.getX()));
             Polynomial slopesSum = field.powerElement(slope, 2).xor(slope);
@@ -93,9 +91,8 @@ public class EllipticCurve {
         } else {
 
             if (j.getX().equals(Polynomial.ZERO)) {
-                return new Point(Polynomial.ZERO, Polynomial.ZERO);
+                return INFINITY;
             }
-
             Polynomial slope = j.getX().xor(field.divideElements(j.getY(), j.getX()));
 
             Polynomial xL = field.powerElement(slope, 2).xor(slope).xor(a);

@@ -15,12 +15,12 @@ public class KeyGenerator {
     public static KeyPair generateKeyPair(EllipticCurve curve) {
 
         KeyPair pair = new KeyPair();
-        pair.setPrivateKey(new BigInteger(curve.getM(), new SecureRandom()));
+        pair.setPrivateKey(new BigInteger((int) (Math.log(curve.getM()) / Math.log(2)), new SecureRandom()));
 
-        log.info("Private key generated " + pair.getPrivateKey());
+//        log.info("Private key generated " + pair.getPrivateKey());
 
         Point point = curve.getGeneratorPoint();
-        point.multiplyByScalar(pair.getPrivateKey(), curve);
+        point = point.multiplyByScalar(pair.getPrivateKey(), curve);
         pair.setPublicKey(point);
 
         return pair;

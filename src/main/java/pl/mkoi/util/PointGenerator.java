@@ -24,7 +24,6 @@ public class PointGenerator {
         while (true) {
             Polynomial x = getRandomElement(polynomial);
             Polynomial y = getRandomElement(polynomial);
-//            log.debug("x " + x.toString() + "y " + y.toString());
             Point point = new Point(x, y);
             if (EllipticCurve.checkIfPointSatisfiesEquation(curve, point)) return point;
         }
@@ -35,7 +34,7 @@ public class PointGenerator {
         Point pointCopy = new Point(point.getX(), point.getY());
         Set<Point> multiplications = new HashSet<>();
         while (true) {
-            pointCopy.multiplyByScalar(scalar, curve);
+            pointCopy = pointCopy.multiplyByScalar(scalar, curve);
             Point newPoint = new Point(pointCopy.getX(), pointCopy.getY());
             if (multiplications.contains(newPoint)) break;
             else {
