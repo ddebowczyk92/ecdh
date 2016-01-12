@@ -3,6 +3,8 @@ package pl.mkoi.test;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import pl.mkoi.util.model.FiniteField;
+import pl.mkoi.util.model.GeneratorPolynomial;
 import pl.mkoi.util.model.Polynomial;
 
 import java.math.BigInteger;
@@ -91,7 +93,7 @@ public class PolynomialTest {
     @Test
     public void isIrreducible() {
         Polynomial polynomial = Polynomial.createFromLong(19L);
-        log.info("is irreducible " + polynomial.toBinaryString() + "? " + !polynomial.isReducibile() );
+        log.info("is irreducible " + polynomial.toBinaryString() + "? " + !polynomial.isReducibile());
     }
 
     @Test
@@ -103,4 +105,30 @@ public class PolynomialTest {
         log.info(generator.toBinaryString() + " pow " + power.toString() + " mod " + mod.toBinaryString() + " = " + result.toBinaryString());
 
     }
+
+    @Test
+    public void inverse() {
+
+        int m = 16;
+        Polynomial irreducible = Polynomial.createIrreducible(16);
+        GeneratorPolynomial generator = GeneratorPolynomial.findGenerator(irreducible);
+
+        FiniteField finiteField = new FiniteField(generator, 16, irreducible);
+
+        Polynomial temp, inv;
+
+        for (int i = (int) (Math.pow(2, m) - 1); i > 0; i--) {
+            temp = Polynomial.createFromLong(i);
+            inv = finiteField.inverseElement(temp);
+
+            assert temp.multiply(inv).mod(irreducible).equals(Polynomial.ONE);
+            log.info(i + " passed");
+
+        }
+
+        log.info("test passed");
+
+    }
+
+
 }
