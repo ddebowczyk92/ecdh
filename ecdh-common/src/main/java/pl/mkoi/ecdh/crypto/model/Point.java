@@ -42,29 +42,23 @@ public class Point implements Cloneable {
     }
 
     public Point multiplyByScalar(BigInteger scalar, EllipticCurve curve) {
-//        log.info("START VALUE " + this);
         Point point = this, add = this;
 
         for (int i = 0; i < scalar.longValue(); i++) {
-//            log.info(i + " " + point.toString() + " " + add.toString());
             point = curve.addPoint(point, add);
         }
-
-//        log.info("Finished " + new Point(point.getX(), point.getY()));
-        return new Point(point.getX(), point.getY());
+        return point;
     }
 
     public Point multiplyByScalarTimesGenerator(BigInteger scalar, EllipticCurve curve) {
-//        log.info("START VALUE " + this);
+
         Point point = this, add = curve.getGeneratorPoint();
 
         for (int i = 0; i < scalar.longValue(); i++) {
-//            log.info(i + " " + point.toString() + " " + add.toString());
             point = curve.addPoint(point, add);
         }
 
-//        log.info("Finished " + new Point(point.getX(), point.getY()));
-        return new Point(point.getX(), point.getY());
+        return point;
     }
 
 
