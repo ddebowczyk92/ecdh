@@ -85,7 +85,6 @@ public class EllipticCurvePointsOperations {
         curve.addPoint(new Point(polyA, polyB), new Point(polyA, polyB));
 
         log.info("Points addition finished ");
-
         log.info("Finished");
 
     }

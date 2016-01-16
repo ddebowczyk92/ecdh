@@ -36,11 +36,13 @@ public class KeyExchangeTest {
             KeyPair keyPairAlice = KeyGenerator.generateKeyPair(curve);
             KeyPair keyPairBob = KeyGenerator.generateKeyPair(curve);
 
-            Point aliceReceivedPoint = new Point(keyPairBob.getPublicKey());
-            Point bobReceivedPoint = new Point(keyPairAlice.getPublicKey());
+            Point aliceReceivedPoint = keyPairBob.getPublicKey();
+            Point bobReceivedPoint = keyPairAlice.getPublicKey();
 
             aliceReceivedPoint = aliceReceivedPoint.multiplyByScalarTimesGenerator(keyPairAlice.getPrivateKey(), curve);
             bobReceivedPoint = bobReceivedPoint.multiplyByScalarTimesGenerator(keyPairBob.getPrivateKey(), curve);
+
+            log.debug(i + " AliceReceivedPoint " + aliceReceivedPoint + " BobReceivedPoint: " + bobReceivedPoint);
 
             Assert.assertTrue(aliceReceivedPoint.equals(bobReceivedPoint));
         }

@@ -9,7 +9,7 @@ import java.math.BigInteger;
 public class EllipticCurve {
 
 
-    public static final Point INFINITY = new Point(Polynomial.ZERO, Polynomial.ZERO);
+    public static final Point INFINITY = new PointAtInfinity();
     private final FiniteField field;
     /**
      * Curve equation parameter
@@ -81,6 +81,10 @@ public class EllipticCurve {
 
             if (getNegativePoint(j).equals(k) && INFINITY != null) return INFINITY;
 
+            if (j instanceof PointAtInfinity || k instanceof PointAtInfinity) {
+                return j instanceof PointAtInfinity ? k : j;
+            }
+
             Polynomial slope = field.divideElements(j.getY().xor(k.getY()), j.getX().xor(k.getX()));
             Polynomial slopesSum = field.powerElement(slope, 2).xor(slope);
 
@@ -90,9 +94,6 @@ public class EllipticCurve {
             return new Point(xL, yL);
         } else {
 
-            if (j.getX().equals(Polynomial.ZERO)) {
-                return INFINITY;
-            }
             Polynomial slope = j.getX().xor(field.divideElements(j.getY(), j.getX()));
 
             Polynomial xL = field.powerElement(slope, 2).xor(slope).xor(a);
