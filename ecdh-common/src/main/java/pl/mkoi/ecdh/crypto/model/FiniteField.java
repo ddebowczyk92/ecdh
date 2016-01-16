@@ -1,4 +1,4 @@
-package pl.mkoi.util.model;
+package pl.mkoi.ecdh.crypto.model;
 
 import java.math.BigInteger;
 

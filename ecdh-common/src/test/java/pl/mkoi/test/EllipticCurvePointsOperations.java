@@ -4,7 +4,7 @@ import com.google.common.collect.HashBiMap;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import pl.mkoi.util.model.*;
+import pl.mkoi.ecdh.crypto.model.*;
 
 public class EllipticCurvePointsOperations {
 
@@ -29,7 +29,7 @@ public class EllipticCurvePointsOperations {
         System.out.println("Generator " + generator.toBinaryString());
         System.out.println("CURVE PARAMETERS: a: " + a + " CURVE PARAMETERS: b: " + b);
 
-        EllipticCurve curve = new EllipticCurve(a, b, field, null, irreducible);
+        EllipticCurve curve = new EllipticCurve(a, b, field, irreducible);
 
         //curve is defined, operations below
 
@@ -80,7 +80,7 @@ public class EllipticCurvePointsOperations {
 
         log.info("Points multiplication started for curve A = " + polyA + " B = " + polyB);
 
-        EllipticCurve curve = new EllipticCurve(polyA, polyB, finiteField, null, irreducible);
+        EllipticCurve curve = new EllipticCurve(polyA, polyB, finiteField, irreducible);
 
         curve.addPoint(new Point(polyA, polyB), new Point(polyA, polyB));
 

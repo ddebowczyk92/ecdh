@@ -3,9 +3,9 @@ package pl.mkoi.test;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import pl.mkoi.util.model.FiniteField;
-import pl.mkoi.util.model.GeneratorPolynomial;
-import pl.mkoi.util.model.Polynomial;
+import pl.mkoi.ecdh.crypto.model.FiniteField;
+import pl.mkoi.ecdh.crypto.model.GeneratorPolynomial;
+import pl.mkoi.ecdh.crypto.model.Polynomial;
 
 import java.math.BigInteger;
 

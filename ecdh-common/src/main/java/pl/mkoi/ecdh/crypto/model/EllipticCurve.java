@@ -1,4 +1,4 @@
-package pl.mkoi.util.model;
+package pl.mkoi.ecdh.crypto.model;
 
 import java.math.BigInteger;
 
@@ -14,12 +14,12 @@ public class EllipticCurve {
     /**
      * Curve equation parameter
      */
-    private Polynomial a;
+    private final Polynomial a;
 
     /**
      * Curve equation parameter
      */
-    private Polynomial b;
+    private final Polynomial b;
 
     private Point generatorPoint;
 
@@ -30,24 +30,18 @@ public class EllipticCurve {
      */
     private int n;
 
-    private EllipticCurve() {
-        field = null;
-    }
 
     /**
      * Creates Elliptic curve for given parameters
      *
      * @param a                     parameter a of elliptic curve equation
      * @param b                     parameter b of elliptic curve equation, cant be zero
-     * @param gPoint                generator point
      * @param irreduciblePolynomial polynomial used for modular arithmetic
      */
-    public EllipticCurve(Polynomial a, Polynomial b, FiniteField field, Point gPoint, Polynomial irreduciblePolynomial) {
+    public EllipticCurve(Polynomial a, Polynomial b, FiniteField field, Polynomial irreduciblePolynomial) {
         this.a = a;
         this.b = b;
         this.field = field;
-
-        this.generatorPoint = gPoint;
         this.irreduciblePolynomial = irreduciblePolynomial;
     }
 
@@ -127,17 +121,11 @@ public class EllipticCurve {
         return a;
     }
 
-    public void setA(Polynomial a) {
-        this.a = a;
-    }
 
     public Polynomial getB() {
         return b;
     }
 
-    public void setB(Polynomial b) {
-        this.b = b;
-    }
 
     public Point getGeneratorPoint() {
         return generatorPoint;

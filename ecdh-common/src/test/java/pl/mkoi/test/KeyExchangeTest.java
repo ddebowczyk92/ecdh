@@ -3,17 +3,17 @@ package pl.mkoi.test;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import pl.mkoi.util.KeyGenerator;
-import pl.mkoi.util.PointGenerator;
-import pl.mkoi.util.model.*;
+import pl.mkoi.ecdh.crypto.util.KeyGenerator;
+import pl.mkoi.ecdh.crypto.util.PointGenerator;
+import pl.mkoi.ecdh.crypto.model.*;
 
 public class KeyExchangeTest {
 
     private final static Logger log = Logger.getLogger(PointGenerator.class);
 
-    @Test
+    //@Test
     public void keyExchangeTest() {
-        int m = 4;
+        int m = 6;
 
         for (int i = 0; i < 10000; i++) {
             Polynomial irreducible = Polynomial.createIrreducible(m);
@@ -26,7 +26,7 @@ public class KeyExchangeTest {
             Polynomial a = Polynomial.createFromLong(randA);
             Polynomial b = Polynomial.createFromLong(randB);
 
-            EllipticCurve curve = new EllipticCurve(a, b, finiteField, null, irreducible);
+            EllipticCurve curve = new EllipticCurve(a, b, finiteField, irreducible);
 
             Point generatePoint = PointGenerator.generatePoint(curve, generator);
             curve.setGeneratorPoint(generatePoint);
@@ -47,6 +47,31 @@ public class KeyExchangeTest {
 
         log.info("TEST PASSED SUCCESSFULLY");
 
+    }
+
+    @Test
+    public void keyExchangeForLargeMTest(){
+        int m = 15;
+        long startTime = System.currentTimeMillis();
+        Polynomial irreducible = Polynomial.createIrreducible(m);
+        log.debug("finding irreducible polynomial: " + (System.currentTimeMillis() - startTime));
+        startTime = System.currentTimeMillis();
+        GeneratorPolynomial generator = GeneratorPolynomial.findGenerator(irreducible);
+        log.debug("finding generator polynomial: " + (System.currentTimeMillis() - startTime));
+        FiniteField finiteField = new FiniteField(generator, m, irreducible);
+
+        int randA = (int) (Math.random() * Math.floor(Math.pow(2, m)));
+        int randB = (int) (Math.random() * Math.floor(Math.pow(2, m)));
+
+        Polynomial a = Polynomial.createFromLong(randA);
+        Polynomial b = Polynomial.createFromLong(randB);
+
+        EllipticCurve curve = new EllipticCurve(a, b, finiteField, irreducible);
+
+        startTime = System.currentTimeMillis();
+        Point generatorPoint = PointGenerator.generatePoint(curve, generator);
+        log.debug("finding generator point: " + (System.currentTimeMillis() - startTime));
+        curve.setGeneratorPoint(generatorPoint);
     }
 
 }

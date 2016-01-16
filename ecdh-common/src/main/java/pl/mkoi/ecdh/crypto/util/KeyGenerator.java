@@ -1,9 +1,9 @@
-package pl.mkoi.util;
+package pl.mkoi.ecdh.crypto.util;
 
 import org.apache.log4j.Logger;
-import pl.mkoi.util.model.EllipticCurve;
-import pl.mkoi.util.model.KeyPair;
-import pl.mkoi.util.model.Point;
+import pl.mkoi.ecdh.crypto.model.EllipticCurve;
+import pl.mkoi.ecdh.crypto.model.KeyPair;
+import pl.mkoi.ecdh.crypto.model.Point;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;

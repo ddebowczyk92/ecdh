@@ -2,8 +2,8 @@ package pl.mkoi.test;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import pl.mkoi.util.model.GeneratorPolynomial;
-import pl.mkoi.util.model.Polynomial;
+import pl.mkoi.ecdh.crypto.model.GeneratorPolynomial;
+import pl.mkoi.ecdh.crypto.model.Polynomial;
 
 /**
  * Created by DominikD on 2015-12-25.

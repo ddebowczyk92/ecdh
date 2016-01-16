@@ -2,9 +2,9 @@ package pl.mkoi.test;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import pl.mkoi.util.KeyGenerator;
-import pl.mkoi.util.PointGenerator;
-import pl.mkoi.util.model.*;
+import pl.mkoi.ecdh.crypto.util.KeyGenerator;
+import pl.mkoi.ecdh.crypto.util.PointGenerator;
+import pl.mkoi.ecdh.crypto.model.*;
 
 public class KeyGeneratorTest {
 
@@ -34,7 +34,7 @@ public class KeyGeneratorTest {
 
         log.info("Points multiplication started for curve A = " + a + " B = " + b);
 
-        EllipticCurve curve = new EllipticCurve(a, b, finiteField, null, irreducible);
+        EllipticCurve curve = new EllipticCurve(a, b, finiteField, irreducible);
 
         Point generatePoint = PointGenerator.generatePoint(curve, generator);
         curve.setGeneratorPoint(generatePoint);
