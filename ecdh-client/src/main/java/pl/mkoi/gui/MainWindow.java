@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
  * Created by DominikD on 2016-01-16.
  */
 public class MainWindow extends JFrame {
+    private final static int WIDTH = 600;
     private JPanel rootPanel;
     private JButton sendButton;
     private JFormattedTextField inputField;
@@ -24,16 +25,18 @@ public class MainWindow extends JFrame {
         super("ecdh");
         setupGui();
 
-
     }
 
     private void setupGui() {
-        setSize(new Dimension(400, 400));
+        setSize(new Dimension(WIDTH, WIDTH));
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
             }
         });
+
+        setTitle("Podaj parametry");
+
         setContentPane(rootPanel);
         setResizable(false);
         setLocationRelativeTo(null);
