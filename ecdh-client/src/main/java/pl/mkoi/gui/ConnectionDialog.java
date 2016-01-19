@@ -4,23 +4,22 @@ import com.google.common.base.Strings;
 import org.apache.log4j.Logger;
 import pl.mkoi.AppContext;
 import pl.mkoi.client.Connection;
+import pl.mkoi.gui.util.RegexFormatter;
 import pl.mkoi.model.ServerAddressDetails;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.MaskFormatter;
 import javax.swing.text.NumberFormatter;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.text.NumberFormat;
-import java.text.ParseException;
 
 public class ConnectionDialog extends JDialog {
 
     private static final Logger log = Logger.getLogger(ConnectionDialog.class);
-
+    private static final String IP_REGEX = "\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}";
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -64,11 +63,6 @@ public class ConnectionDialog extends JDialog {
         portNumber.setFormatterFactory(new DefaultFormatterFactory(new NumberFormatter(NumberFormat.getIntegerInstance())));
 
         message.setVisible(false);
-        try {
-            ipAddress.setFormatterFactory(new DefaultFormatterFactory(new MaskFormatter("###.###.###.###")));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         setTitle("Connection parameters setup");
 
@@ -167,14 +161,15 @@ public class ConnectionDialog extends JDialog {
     }
 
     private void tryToConnect(final ServerAddressDetails details) {
+        showMessage("Trying to connect...");
         SwingWorker<Boolean, Integer> worker = new SwingWorker() {
             @Override
             protected Boolean doInBackground() throws Exception {
-                showMessage("Trying to connect...");
+
                 disableEverything();
                 Socket clientSocket = new Socket();
                 try {
-                    clientSocket.connect(new InetSocketAddress(details.getIpAddress(), (int) details.getPort()), 15);
+                    clientSocket.connect(new InetSocketAddress(details.getIpAddress(), (int) details.getPort()), 10000);
                     Connection clientConnection = new Connection(clientSocket);
                     clientConnection.start();
                     AppContext context = AppContext.getInstance();
@@ -191,7 +186,7 @@ public class ConnectionDialog extends JDialog {
             }
 
         };
-        worker.run();
+        worker.execute();
 
     }
 
@@ -208,5 +203,9 @@ public class ConnectionDialog extends JDialog {
     private void hideError() {
         message.setText("");
         message.setVisible(false);
+    }
+
+    private void createUIComponents() {
+        ipAddress = new JFormattedTextField(new RegexFormatter(IP_REGEX));
     }
 }
