@@ -35,7 +35,7 @@ public class MainWindow extends JFrame {
             }
         });
 
-        setTitle("Podaj parametry");
+        setTitle("ECDH");
 
         setContentPane(rootPanel);
         setResizable(false);

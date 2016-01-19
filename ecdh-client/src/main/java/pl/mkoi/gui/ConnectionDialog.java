@@ -1,5 +1,9 @@
 package pl.mkoi.gui;
 
+import com.google.common.base.Strings;
+import org.apache.log4j.Logger;
+import pl.mkoi.AppContext;
+import pl.mkoi.client.Connection;
 import pl.mkoi.model.ServerAddressDetails;
 
 import javax.swing.*;
@@ -7,10 +11,16 @@ import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
 import javax.swing.text.NumberFormatter;
 import java.awt.event.*;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
 public class ConnectionDialog extends JDialog {
+
+    private static final Logger log = Logger.getLogger(ConnectionDialog.class);
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -38,7 +48,6 @@ public class ConnectionDialog extends JDialog {
             }
         });
 
-// call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -46,7 +55,6 @@ public class ConnectionDialog extends JDialog {
             }
         });
 
-// call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
@@ -62,52 +70,133 @@ public class ConnectionDialog extends JDialog {
             e.printStackTrace();
         }
 
-        setTitle("Podaj parametry");
+        setTitle("Connection parameters setup");
 
+    }
+
+    private void cleanUp() {
+        this.portNumber.setText("");
+        this.ipAddress.setText("");
+        this.nickname.setText("");
+        this.message.setText("");
+    }
+
+    private void disableEverything() {
+        this.portNumber.setEnabled(false);
+        this.ipAddress.setEnabled(false);
+        this.nickname.setEnabled(false);
+        this.buttonOK.setEnabled(false);
+        this.buttonCancel.setEnabled(false);
+    }
+
+    private void enableEverything() {
+        this.portNumber.setEnabled(true);
+        this.ipAddress.setEnabled(true);
+        this.nickname.setEnabled(true);
+        this.buttonOK.setEnabled(true);
+        this.buttonCancel.setEnabled(true);
     }
 
     private void onOK() {
-// add your code here
-//        dispose();
         ServerAddressDetails details = new ServerAddressDetails();
+        StringBuilder errorBuilder = new StringBuilder();
+        String portString = portNumber.getText();
+        String ipString = ipAddress.getText();
+        boolean isDataValid = true;
+        this.message.setText("");
+        if (isIpValid(ipString)) {
+            details.setIpAddress(ipString);
+        } else {
+            isDataValid = false;
+            errorBuilder.append("Invalid IP address\n");
+        }
 
-        String ip = ipAddress.getText();
-        String[] split = ip.split("\\.");
+        if (!Strings.isNullOrEmpty(portString)) {
 
-        System.out.println(ip);
-
-        for (String s : split) {
-            if (Integer.parseInt(s) > 255) {
-
-                showMessage("Numer IP jest błędny");
-                return;
+            long port = 0;
+            try {
+                port = Long.parseLong(portString.replaceAll("\u00A0", ""));
+                if (isPortValid(port)) {
+                    details.setPort(port);
+                } else {
+                    errorBuilder.append("Port number is invalid");
+                    isDataValid = false;
+                }
+            } catch (NumberFormatException e) {
+                errorBuilder.append("Invalid port number format");
+                isDataValid = false;
             }
-            System.out.println(s);
-        }
 
-        details.setIpAddress(ip);
+        } else {
+            errorBuilder.append("Provide port number");
+            isDataValid = false;
+        }
         details.setNickName(nickname.getText());
+        if (isDataValid) {
 
-        long port = Long.parseLong(portNumber.getText().replaceAll("\u00A0", ""));
-        portNumber.setText(String.valueOf(port));
-        if (port > 65535) {
-            showMessage("Numer portu jest za wysoki");
-            return;
+            tryToConnect(details);
+        } else {
+            showMessage(errorBuilder.toString());
         }
-
-        details.setPort(port);
-
-        showMessage("Próba połaczenie");
-
-        tryToConnect(details);
     }
 
-    private void tryToConnect(ServerAddressDetails details) {
-        //connect code here
+    private boolean isIpValid(String ip) {
+        boolean result = true;
+        if (!Strings.isNullOrEmpty(ip)) {
+            String[] split = ip.split("\\.");
+            try {
+                for (String s : split) {
+                    String trimmed = s.trim();
+                    if (Integer.parseInt(trimmed) > 255 || Integer.parseInt(trimmed) < 0) {
+                        result = false;
+                        break;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    private boolean isPortValid(long portNumber) {
+        boolean result = false;
+        if (portNumber < 65536 && portNumber > 0) result = true;
+
+        return result;
+    }
+
+    private void tryToConnect(final ServerAddressDetails details) {
+        SwingWorker<Boolean, Integer> worker = new SwingWorker() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                showMessage("Trying to connect...");
+                disableEverything();
+                Socket clientSocket = new Socket();
+                try {
+                    clientSocket.connect(new InetSocketAddress(details.getIpAddress(), (int) details.getPort()), 15);
+                    Connection clientConnection = new Connection(clientSocket);
+                    clientConnection.start();
+                    AppContext context = AppContext.getInstance();
+                    context.setClientConnection(clientConnection);
+                    showMessage("Connected");
+                    dispose();
+
+                } catch (IOException e) {
+                    enableEverything();
+                    showMessage("Failed to connect");
+                    log.error("Connection exception", e);
+                }
+                return true;
+            }
+
+        };
+        worker.run();
+
     }
 
     private void onCancel() {
-// add your code here if necessary
+        cleanUp();
         dispose();
     }
 
