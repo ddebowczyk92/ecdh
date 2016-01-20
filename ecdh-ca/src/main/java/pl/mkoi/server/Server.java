@@ -19,10 +19,10 @@ public class Server extends Thread {
 
     private final int port;
     private final int connectionLimit;
+    private final AtomicInteger idGenerator = new AtomicInteger(0);
     private boolean running;
     private ServerSocket socket;
     private ExecutorService executorService;
-    private final AtomicInteger idGenerator = new AtomicInteger(0);
 
     public Server(int port, int connectionLimit) {
         this.connectionLimit = connectionLimit;
@@ -41,7 +41,6 @@ public class Server extends Thread {
                 int id = idGenerator.getAndIncrement();
                 Connection newConn = new Connection(id, clientSocket);
                 executorService.submit(newConn);
-
             }
 
         } catch (IOException e) {

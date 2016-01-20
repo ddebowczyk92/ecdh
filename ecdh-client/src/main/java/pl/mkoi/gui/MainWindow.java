@@ -50,6 +50,10 @@ public class MainWindow extends JFrame {
         setSize(new Dimension(WIDTH, WIDTH));
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
+                if (AppContext.getInstance().getClientConnection() != null) {
+                    AppContext.getInstance().getClientConnection().closeConnection();
+                }
+
                 System.exit(0);
             }
         });

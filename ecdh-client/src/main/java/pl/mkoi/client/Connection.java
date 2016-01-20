@@ -4,11 +4,11 @@ import org.apache.log4j.Logger;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -19,10 +19,10 @@ public class Connection extends Thread {
     private static final Logger log = Logger.getLogger(Connection.class);
 
     private final Socket clientSocket;
-    private boolean running;
     private final ConcurrentLinkedQueue<ProtocolDataUnit> pduSendQueue;
-    private DataInputStream dis;
-    private DataOutputStream dos;
+    private boolean running;
+    private BufferedReader in;
+    private PrintWriter out;
     private PDUReaderWriter pduReaderWriter;
 
     public Connection(Socket clientSocket) throws IOException {
@@ -37,21 +37,28 @@ public class Connection extends Thread {
     @Override
     public void run() {
         running = true;
+
+        try {
+            this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
+            this.out = new PrintWriter(this.clientSocket.getOutputStream(), true);
+
+            String temp = in.readLine();
+            log.info("Received: " + temp);
+        } catch (IOException e) {
+            log.error("Error while sending data", e);
+        }
+
         while (!clientSocket.isClosed() && running) {
             if (!pduSendQueue.isEmpty()) {
                 try {
-                    this.dis = new DataInputStream(this.clientSocket.getInputStream());
-                    this.dos = new DataOutputStream(this.clientSocket.getOutputStream());
                     ProtocolDataUnit pdu = pduSendQueue.poll();
                     writeDataToStream(pdu);
-                    this.dis.close();
-                    this.dos.close();
+
                 } catch (IOException e) {
                     log.error("Error while sending data", e);
                 }
             }
         }
-
     }
 
     public void sendMessage(ProtocolDataUnit message) {
@@ -64,8 +71,10 @@ public class Connection extends Thread {
 
     private void writeDataToStream(ProtocolDataUnit message) throws IOException {
         String dataToSend = pduReaderWriter.serialize(message);
-        this.dos.write(dataToSend.getBytes(Charset.forName("UTF-8")));
+        out.println(dataToSend);
+        out.flush();
     }
+
 
     public void closeConnection() {
         this.running = false;
@@ -77,22 +86,26 @@ public class Connection extends Thread {
             }
 
         }
-        if (this.dis != null) {
+        if (this.in != null) {
             try {
-                this.dis.close();
+                this.in.close();
             } catch (IOException e) {
                 log.error("Error while closing input stream");
             }
         }
 
-        if (this.dos != null) {
-            try {
-                this.dos.close();
-            } catch (IOException e) {
-                log.error("Error while closing output stream");
-            }
+        if (this.out != null) {
+            this.out.close();
         }
+
+        log.info("Connection closed");
     }
 
+    @Override
+    protected void finalize() throws Throwable {
 
+        log.info("Finalized");
+        closeConnection();
+        super.finalize();
+    }
 }

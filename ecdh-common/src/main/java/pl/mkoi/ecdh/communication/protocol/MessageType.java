@@ -6,4 +6,5 @@ package pl.mkoi.ecdh.communication.protocol;
 public enum MessageType {
     SIMPLE_MESSAGE,
     LIST_AVAILABLE_HOSTS,
+    SERVER_HELLO
 }
