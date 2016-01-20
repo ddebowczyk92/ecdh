@@ -174,6 +174,7 @@ public class ConnectionDialog extends JDialog {
                     clientConnection.start();
                     AppContext context = AppContext.getInstance();
                     context.setClientConnection(clientConnection);
+                    context.setConnectedToServer(true);
                     showMessage("Connected");
                     dispose();
 

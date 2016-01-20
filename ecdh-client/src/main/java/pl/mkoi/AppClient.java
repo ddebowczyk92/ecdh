@@ -4,7 +4,7 @@ import pl.mkoi.gui.MainWindow;
 
 import javax.swing.*;
 
-public class App {
+public class AppClient {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -26,6 +26,6 @@ public class App {
     }
 
     private static void createAndShowGUI() {
-        new MainWindow();
+        MainWindow window = new MainWindow();
     }
 }
