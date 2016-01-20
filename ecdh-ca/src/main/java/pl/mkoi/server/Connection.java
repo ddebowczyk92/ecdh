@@ -3,9 +3,9 @@ package pl.mkoi.server;
 import org.apache.log4j.Logger;
 import pl.mkoi.AppContext;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 /**
@@ -19,25 +19,39 @@ public class Connection implements Runnable {
     private final Socket socket;
     private AppContext context;
     private boolean running;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private DataInputStream inputStream;
+    private DataOutputStream outputStream;
 
     public Connection(int id, Socket socket) {
         this.id = id;
         this.socket = socket;
         this.context = AppContext.getInstance();
+
+        try {
+            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+            log.error(e);
+        }
     }
 
     @Override
     public void run() {
-        try {
-            while (isRunning() && !socket.isClosed()) {
-                inputStream = socket.getInputStream();
-                outputStream = socket.getOutputStream();
+
+        log.info("Client " + this.id + " connected to server");
+        while (isRunning() && !socket.isClosed()) {
+            StringBuffer inputLine = new StringBuffer();
+            String tmp;
+            try {
+                while ((tmp = inputStream.readUTF()) != null) {
+                    inputLine.append(tmp);
+                }
+                log.info(inputLine.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            log.error("error connection " + getId(), e);
         }
+
     }
 
     public int getId() {

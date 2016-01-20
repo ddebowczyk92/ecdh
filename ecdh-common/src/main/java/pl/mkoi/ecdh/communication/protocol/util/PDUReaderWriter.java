@@ -21,11 +21,11 @@ public class PDUReaderWriter {
         gson = new GsonBuilder().registerTypeAdapter(Payload.class, new PayloadAdapter()).create();
     }
 
-    private synchronized String serialize(ProtocolDataUnit dataUnit) throws JsonParseException {
+    public synchronized String serialize(ProtocolDataUnit dataUnit) throws JsonParseException {
         return gson.toJson(dataUnit).toString();
     }
 
-    private synchronized ProtocolDataUnit deserialize(String input) throws JsonParseException {
+    public synchronized ProtocolDataUnit deserialize(String input) throws JsonParseException {
         return gson.fromJson(input, ProtocolDataUnit.class);
     }
 

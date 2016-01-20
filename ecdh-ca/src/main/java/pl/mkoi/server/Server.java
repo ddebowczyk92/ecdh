@@ -24,10 +24,10 @@ public class Server extends Thread {
     private ExecutorService executorService;
     private final AtomicInteger idGenerator = new AtomicInteger(0);
 
-    public Server(ExecutorService executorService, int port, int connectionLimit) {
+    public Server(int port, int connectionLimit) {
         this.connectionLimit = connectionLimit;
         this.port = port;
-        executorService = Executors.newFixedThreadPool(this.connectionLimit);
+        this.executorService = Executors.newFixedThreadPool(this.connectionLimit);
     }
 
     @Override
@@ -35,6 +35,7 @@ public class Server extends Thread {
         try {
             socket = new ServerSocket(this.port, this.connectionLimit);
             this.running = true;
+            log.info("Server started running on port: " + this.port);
             while (!socket.isClosed() && this.running) {
                 Socket clientSocket = socket.accept();
                 int id = idGenerator.getAndIncrement();

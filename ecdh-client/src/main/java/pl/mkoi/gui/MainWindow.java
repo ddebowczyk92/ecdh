@@ -1,5 +1,11 @@
 package pl.mkoi.gui;
 
+import pl.mkoi.AppContext;
+import pl.mkoi.ecdh.communication.protocol.MessageType;
+import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
+import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
+import pl.mkoi.ecdh.communication.protocol.SimpleMessagePayload;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,6 +17,7 @@ import java.awt.event.WindowEvent;
  * Created by DominikD on 2016-01-16.
  */
 public class MainWindow extends JFrame {
+    private final static int WIDTH = 600;
     private JPanel rootPanel;
     private JButton sendButton;
     private JFormattedTextField inputField;
@@ -24,16 +31,31 @@ public class MainWindow extends JFrame {
         super("ecdh");
         setupGui();
 
-
+        sendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AppContext context = AppContext.getInstance();
+                if (context.isConnectedToServer()) {
+                    ProtocolHeader header = new ProtocolHeader();
+                    header.setMessageType(MessageType.SIMPLE_MESSAGE);
+                    SimpleMessagePayload payload = new SimpleMessagePayload(inputField.getText());
+                    ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
+                    context.getClientConnection().sendMessage(pdu);
+                }
+            }
+        });
     }
 
     private void setupGui() {
-        setSize(new Dimension(400, 400));
+        setSize(new Dimension(WIDTH, WIDTH));
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
             }
         });
+
+        setTitle("ECDH");
+
         setContentPane(rootPanel);
         setResizable(false);
         setLocationRelativeTo(null);

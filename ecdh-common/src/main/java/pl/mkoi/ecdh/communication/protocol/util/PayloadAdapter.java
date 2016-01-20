@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 /**
  * Created by DominikD on 2016-01-18.
  */
-public class PayloadAdapter implements JsonSerializer<Payload>, JsonDeserializer<Payload> {
+class PayloadAdapter implements JsonSerializer<Payload>, JsonDeserializer<Payload> {
 
     @Override
     public Payload deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
