@@ -1,15 +1,17 @@
 package pl.mkoi.client;
 
 import org.apache.log4j.Logger;
+import pl.mkoi.AppContext;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
+import pl.mkoi.ecdh.event.ServerInterruptEvent;
+import pl.mkoi.ecdh.event.SimpleMessageEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by DominikD on 2016-01-19.
@@ -19,20 +21,18 @@ public class Connection extends Thread {
     private static final Logger log = Logger.getLogger(Connection.class);
 
     private final Socket clientSocket;
-    private final ConcurrentLinkedQueue<ProtocolDataUnit> pduSendQueue;
+    private final AppContext context = AppContext.getInstance();
     private boolean running;
     private BufferedReader in;
     private PrintWriter out;
     private PDUReaderWriter pduReaderWriter;
 
+
     public Connection(Socket clientSocket) throws IOException {
         super();
         this.clientSocket = clientSocket;
-        this.pduSendQueue = new ConcurrentLinkedQueue<>();
-
         pduReaderWriter = PDUReaderWriter.getInstance();
     }
-
 
     @Override
     public void run() {
@@ -41,30 +41,30 @@ public class Connection extends Thread {
         try {
             this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
             this.out = new PrintWriter(this.clientSocket.getOutputStream(), true);
+            String temp;
+            while ((temp = in.readLine()) != null) {
+                processData(temp);
+            }
+            if (in.readLine() == null) {
+                context.postEvent(new ServerInterruptEvent());
+                closeConnection();
+            }
 
-            String temp = in.readLine();
-            log.info("Received: " + temp);
         } catch (IOException e) {
             log.error("Error while sending data", e);
         }
+    }
 
-        while (!clientSocket.isClosed() && running) {
-            if (!pduSendQueue.isEmpty()) {
-                try {
-                    ProtocolDataUnit pdu = pduSendQueue.poll();
-                    writeDataToStream(pdu);
-
-                } catch (IOException e) {
-                    log.error("Error while sending data", e);
-                }
-            }
-        }
+    private void processData(String data) {
+        ProtocolDataUnit pdu = pduReaderWriter.deserialize(data);
+        SimpleMessageEvent event = new SimpleMessageEvent(pdu);
+        context.postEvent(event);
     }
 
     public void sendMessage(ProtocolDataUnit message) {
         try {
-            this.pduSendQueue.add(message);
-        } catch (Exception e) {
+            writeDataToStream(message);
+        } catch (IOException e) {
             log.error(e);
         }
     }

@@ -7,4 +7,8 @@ public class ServerHelloPayload extends Payload {
         this.id = id;
 
     }
+
+    public int getId() {
+        return id;
+    }
 }

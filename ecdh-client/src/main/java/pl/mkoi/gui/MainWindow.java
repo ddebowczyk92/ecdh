@@ -1,10 +1,9 @@
 package pl.mkoi.gui;
 
+import com.google.common.eventbus.Subscribe;
 import pl.mkoi.AppContext;
-import pl.mkoi.ecdh.communication.protocol.MessageType;
-import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
-import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
-import pl.mkoi.ecdh.communication.protocol.SimpleMessagePayload;
+import pl.mkoi.ecdh.communication.protocol.*;
+import pl.mkoi.ecdh.event.SimpleMessageEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,24 +25,13 @@ public class MainWindow extends JFrame {
     private JMenuBar menuBar;
     private JMenu optionsMenu;
     private ConnectionDialog connectionDialog;
+    private AppContext context = AppContext.getInstance();
 
     public MainWindow() throws HeadlessException {
         super("ecdh");
         setupGui();
+        context.registerListener(this);
 
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AppContext context = AppContext.getInstance();
-                if (context.isConnectedToServer()) {
-                    ProtocolHeader header = new ProtocolHeader();
-                    header.setMessageType(MessageType.SIMPLE_MESSAGE);
-                    SimpleMessagePayload payload = new SimpleMessagePayload(inputField.getText());
-                    ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
-                    context.getClientConnection().sendMessage(pdu);
-                }
-            }
-        });
     }
 
     private void setupGui() {
@@ -79,7 +67,34 @@ public class MainWindow extends JFrame {
         menuBar.add(optionsMenu);
         logTextPane.setEditable(false);
 
+        sendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AppContext context = AppContext.getInstance();
+                if (context.isConnectedToServer()) {
+                    ProtocolHeader header = new ProtocolHeader();
+                    header.setMessageType(MessageType.SIMPLE_MESSAGE);
+                    SimpleMessagePayload payload = new SimpleMessagePayload(inputField.getText());
+                    ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
+                    context.getClientConnection().sendMessage(pdu);
+                }
+            }
+        });
+
         setJMenuBar(menuBar);
         setVisible(true);
+    }
+
+    @Subscribe
+    public void onMessage(final SimpleMessageEvent event) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ServerHelloPayload payload = (ServerHelloPayload) event.getPdu().getPayload();
+                StringBuffer buffer = new StringBuffer(logTextPane.getText());
+                buffer.append(payload.getId() + "\n");
+                logTextPane.setText(buffer.toString());
+            }
+        });
     }
 }

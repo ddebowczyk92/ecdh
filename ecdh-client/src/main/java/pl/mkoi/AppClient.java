@@ -26,6 +26,6 @@ public class AppClient {
     }
 
     private static void createAndShowGUI() {
-        new MainWindow();
+        MainWindow window = new MainWindow();
     }
 }

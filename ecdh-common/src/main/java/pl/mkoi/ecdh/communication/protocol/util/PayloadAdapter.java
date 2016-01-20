@@ -10,25 +10,32 @@ import java.lang.reflect.Type;
  */
 class PayloadAdapter implements JsonSerializer<Payload>, JsonDeserializer<Payload> {
 
-    @Override
-    public Payload deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
-        String type = jsonObject.get("type").getAsString();
-        JsonElement element = jsonObject.get("properties");
+    private static final String CLASSNAME = "CLASSNAME";
+    private static final String INSTANCE = "INSTANCE";
 
+    @Override
+    public Payload deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        JsonObject jsonObject = json.getAsJsonObject();
+        JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
+        String className = prim.getAsString();
+
+        Class<?> objectClass = null;
         try {
-            return jsonDeserializationContext.deserialize(element, Class.forName("com.googlecode.whiteboard.model." + type));
-        } catch (ClassNotFoundException cnfe) {
-            throw new JsonParseException("Unknown element type: " + type, cnfe);
+            objectClass = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new JsonParseException(e.getMessage());
         }
+        return jsonDeserializationContext.deserialize(jsonObject.get(INSTANCE), objectClass);
     }
 
     @Override
     public JsonElement serialize(Payload payload, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject result = new JsonObject();
-        result.add("type", new JsonPrimitive(payload.getClass().getSimpleName()));
-        result.add("properties", jsonSerializationContext.serialize(payload, payload.getClass()));
-
-        return result;
+        JsonObject retValue = new JsonObject();
+        String className = payload.getClass().getName();
+        retValue.addProperty(CLASSNAME, className);
+        JsonElement elem = jsonSerializationContext.serialize(retValue);
+        retValue.add(INSTANCE, elem);
+        return retValue;
     }
 }

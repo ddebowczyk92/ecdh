@@ -31,52 +31,37 @@ public class Connection implements Runnable {
         this.socket = socket;
         this.context = AppContext.getInstance();
         this.pduReaderWriter = PDUReaderWriter.getInstance();
-
-        try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream());
-        } catch (IOException e) {
-            log.error(e);
-        }
     }
 
     @Override
     public void run() {
         log.info("Client " + this.id + " connected to server");
-
-        ProtocolHeader header = new ProtocolHeader();
-        header.setMessageType(MessageType.SERVER_HELLO);
-        Payload payload = new ServerHelloPayload(id);
-        ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
-
         try {
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream());
+            running = true;
+            ProtocolHeader header = new ProtocolHeader();
+            header.setMessageType(MessageType.SERVER_HELLO);
+            Payload payload = new ServerHelloPayload(id);
+            ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
             writeDataToStream(pdu);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        out.write("Server says Hello\n");
-        out.flush();
-        running = true;
-
-        while (isRunning() && !socket.isClosed()) {
-            String inputLine;
-
-            try {
-                inputLine = in.readLine();
-                log.info("I read! " + inputLine);
-
-                if (inputLine == null) {
-                    log.info("Disconnected ");
-                    return;
-                }
-                //process message
 
 
-            } catch (IOException e) {
-                e.printStackTrace();
+            String stringData;
+            while ((stringData = in.readLine()) != null) {
+                notifyObservers(stringData);
             }
+            if (in.readLine() == null) {
+
+            }
+        } catch (IOException e) {
+            log.error(e);
+
         }
+    }
+
+    private void notifyObservers(String stringData) {
+        log.info(stringData);
     }
 
     public int getId() {
