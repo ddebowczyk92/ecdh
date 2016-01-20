@@ -22,4 +22,5 @@ public class SimpleMessagePayload extends Payload {
     public void setMessage(String message) {
         this.message = message;
     }
+
 }
