@@ -2,8 +2,7 @@ package pl.mkoi.ecdh.communication.protocol.util;
 
 import pl.mkoi.ecdh.communication.protocol.MessageType;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
-import pl.mkoi.ecdh.communication.protocol.ServerHelloPayload;
-import pl.mkoi.ecdh.communication.protocol.SimpleMessagePayload;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Class handles message processing and delivers reaction methods
@@ -17,27 +16,43 @@ public abstract class MessageProcessor {
      */
     public void process(ProtocolDataUnit dataUnit) {
         MessageType type = dataUnit.getHeader().getMessageType();
-        ((SimpleMessagePayload) dataUnit.getPayload()).getMessage();
-
         switch (type) {
             case SIMPLE_MESSAGE:
-                onSimpleMessageReceived(((SimpleMessagePayload) dataUnit.getPayload()));
+                onSimpleMessageReceived(dataUnit);
                 break;
             case SERVER_HELLO:
-                onServerHelloReceived(((ServerHelloPayload) dataUnit.getPayload()));
+                onServerHelloReceived(dataUnit);
                 break;
-            case LIST_AVAILABLE_HOSTS:
-                onListHostsReceived();
+            case SERVER_HELLO_RESPONSE:
+                onServerHelloResponseReceived(dataUnit);
+            case LIST_AVAILABLE_HOSTS_REQUEST:
+                onListHostsRequestReceived(dataUnit);
                 break;
+            case LIST_AVAILABLE_HOSTS_RESPONSE:
+                onListHostsResponseReceived(dataUnit);
             default:
-                break;
+                throw new NoSuchMethodError();
         }
     }
 
-    protected abstract void onListHostsReceived();
+    protected void onListHostsResponseReceived(ProtocolDataUnit dataUnit) {
+        throw new NotImplementedException();
+    }
 
-    protected abstract void onServerHelloReceived(ServerHelloPayload payload);
+    protected abstract void onSimpleMessageReceived(ProtocolDataUnit pdu);
 
-    protected abstract void onSimpleMessageReceived(SimpleMessagePayload payload);
+    protected void onServerHelloResponseReceived(ProtocolDataUnit dataUnit) {
+        throw new NotImplementedException();
+    }
+
+    protected void onListHostsRequestReceived(ProtocolDataUnit pdu) {
+        throw new NotImplementedException();
+    }
+
+    protected void onServerHelloReceived(ProtocolDataUnit pdu) {
+        throw new NotImplementedException();
+    }
+
+
 
 }

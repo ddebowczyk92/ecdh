@@ -5,15 +5,10 @@ import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 /**
  * Created by DominikD on 2016-01-20.
  */
-public class SimpleMessageEvent extends Event {
+public class SimpleMessageEvent extends PduEvent {
+
 
     public SimpleMessageEvent(ProtocolDataUnit pdu) {
-        this.pdu = pdu;
-    }
-
-    private final ProtocolDataUnit pdu;
-
-    public ProtocolDataUnit getPdu() {
-        return pdu;
+        super(pdu);
     }
 }

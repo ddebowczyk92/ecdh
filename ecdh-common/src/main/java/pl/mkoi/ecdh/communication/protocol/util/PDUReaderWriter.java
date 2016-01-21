@@ -3,7 +3,7 @@ package pl.mkoi.ecdh.communication.protocol.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import pl.mkoi.ecdh.communication.protocol.Payload;
+import pl.mkoi.ecdh.communication.protocol.payload.Payload;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 
 /**

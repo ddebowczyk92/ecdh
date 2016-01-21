@@ -1,4 +1,4 @@
-package pl.mkoi.ecdh.communication.protocol;
+package pl.mkoi.ecdh.communication.protocol.payload;
 
 public class ServerHelloPayload extends Payload {
     private final int id;

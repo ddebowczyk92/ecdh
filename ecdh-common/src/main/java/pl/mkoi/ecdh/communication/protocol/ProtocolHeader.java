@@ -1,10 +1,22 @@
 package pl.mkoi.ecdh.communication.protocol;
 
-public class ProtocolHeader {
+import org.joda.time.DateTime;
 
+import java.sql.Timestamp;
+
+public class ProtocolHeader {
+    private final String timestamp = new Timestamp(new DateTime().getMillis()).toString();
     private MessageType messageType;
     private int sourceId;
     private int destinationId;
+
+    public ProtocolHeader(){
+
+    }
+
+    public ProtocolHeader(MessageType messageType){
+        this.messageType = messageType;
+    }
 
     public MessageType getMessageType() {
         return messageType;
@@ -28,5 +40,9 @@ public class ProtocolHeader {
 
     public void setDestinationId(int destinationId) {
         this.destinationId = destinationId;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 }

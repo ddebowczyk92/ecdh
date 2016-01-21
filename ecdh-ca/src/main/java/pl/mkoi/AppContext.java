@@ -2,6 +2,7 @@ package pl.mkoi;
 
 import pl.mkoi.server.Connection;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -28,5 +29,13 @@ public class AppContext {
         if (conn != null) {
             connections.remove(id);
         }
+    }
+
+    public Connection getConnection(int id) {
+            return connections.get(id);
+    }
+
+    public Map<Integer, Connection> getConnections(){
+        return this.connections;
     }
 }
