@@ -3,6 +3,8 @@ package pl.mkoi.gui;
 import com.google.common.eventbus.Subscribe;
 import pl.mkoi.AppContext;
 import pl.mkoi.ecdh.communication.protocol.*;
+import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
+import pl.mkoi.ecdh.communication.protocol.payload.SimpleMessagePayload;
 import pl.mkoi.ecdh.event.SimpleMessageEvent;
 
 import javax.swing.*;

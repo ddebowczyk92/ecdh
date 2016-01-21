@@ -1,7 +1,7 @@
 package pl.mkoi.ecdh.communication.protocol.util;
 
 import com.google.gson.*;
-import pl.mkoi.ecdh.communication.protocol.Payload;
+import pl.mkoi.ecdh.communication.protocol.payload.Payload;
 
 import java.lang.reflect.Type;
 

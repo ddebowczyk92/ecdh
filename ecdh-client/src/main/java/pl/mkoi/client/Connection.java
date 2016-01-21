@@ -3,7 +3,10 @@ package pl.mkoi.client;
 import org.apache.log4j.Logger;
 import pl.mkoi.AppContext;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
+import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
+import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
+import pl.mkoi.ecdh.event.ListHostsResponseEvent;
 import pl.mkoi.ecdh.event.ServerInterruptEvent;
 import pl.mkoi.ecdh.event.SimpleMessageEvent;
 
@@ -26,12 +29,14 @@ public class Connection extends Thread {
     private BufferedReader in;
     private PrintWriter out;
     private PDUReaderWriter pduReaderWriter;
+    private MessageProcessor messageService;
 
 
     public Connection(Socket clientSocket) throws IOException {
         super();
         this.clientSocket = clientSocket;
         pduReaderWriter = PDUReaderWriter.getInstance();
+        setupMessageService();
     }
 
     @Override
@@ -55,10 +60,30 @@ public class Connection extends Thread {
         }
     }
 
+    private void setupMessageService() {
+        messageService = new MessageProcessor() {
+            @Override
+            protected void onSimpleMessageReceived(ProtocolDataUnit pdu) {
+                context.postEvent(new SimpleMessageEvent(pdu));
+            }
+
+            @Override
+            protected void onListHostsResponseReceived(ProtocolDataUnit dataUnit) {
+                context.postEvent(new ListHostsResponseEvent(dataUnit));
+            }
+
+            @Override
+            protected void onServerHelloReceived(ProtocolDataUnit pdu) {
+                ServerHelloPayload payload = (ServerHelloPayload) pdu.getPayload();
+                context.setUserId(payload.getId());
+
+            }
+        };
+    }
+
     private void processData(String data) {
         ProtocolDataUnit pdu = pduReaderWriter.deserialize(data);
-        SimpleMessageEvent event = new SimpleMessageEvent(pdu);
-        context.postEvent(event);
+        messageService.process(pdu);
     }
 
     public void sendMessage(ProtocolDataUnit message) {

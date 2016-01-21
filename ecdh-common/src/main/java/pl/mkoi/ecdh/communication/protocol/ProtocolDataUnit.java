@@ -1,5 +1,7 @@
 package pl.mkoi.ecdh.communication.protocol;
 
+import pl.mkoi.ecdh.communication.protocol.payload.Payload;
+
 /**
  * Created by DominikD on 2016-01-18.
  */

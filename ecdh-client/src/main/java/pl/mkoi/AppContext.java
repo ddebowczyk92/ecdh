@@ -14,6 +14,8 @@ public class AppContext {
     private Connection clientConnection;
     private ServerAddressDetails serverAddressDetails;
     private boolean connectedToServer;
+    private String userNickName;
+    private int userId;
     private EventBus eventBus = new EventBus("ClientEventBus");
 
     public static synchronized AppContext getInstance() {
@@ -45,6 +47,22 @@ public class AppContext {
 
     public void setConnectedToServer(boolean connectedToServer) {
         this.connectedToServer = connectedToServer;
+    }
+
+    public String getUserNickName() {
+        return userNickName;
+    }
+
+    public void setUserNickName(String userNickName) {
+        this.userNickName = userNickName;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public void registerListener(Object obj) {
