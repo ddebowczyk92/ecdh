@@ -45,10 +45,10 @@ public class Connection extends Thread {
             while ((temp = in.readLine()) != null) {
                 processData(temp);
             }
-            if (in.readLine() == null) {
-                context.postEvent(new ServerInterruptEvent());
-                closeConnection();
-            }
+
+            context.postEvent(new ServerInterruptEvent());
+            closeConnection();
+
 
         } catch (IOException e) {
             log.error("Error while sending data", e);

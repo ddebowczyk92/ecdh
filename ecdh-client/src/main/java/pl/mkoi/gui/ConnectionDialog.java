@@ -96,8 +96,10 @@ public class ConnectionDialog extends JDialog {
         StringBuilder errorBuilder = new StringBuilder();
         String portString = portNumber.getText();
         String ipString = ipAddress.getText();
+
         boolean isDataValid = true;
         this.message.setText("");
+
         if (isIpValid(ipString)) {
             details.setIpAddress(ipString);
         } else {

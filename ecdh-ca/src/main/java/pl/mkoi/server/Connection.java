@@ -51,9 +51,7 @@ public class Connection implements Runnable {
             while ((stringData = in.readLine()) != null) {
                 notifyObservers(stringData);
             }
-            if (in.readLine() == null) {
-
-            }
+            closeConnection();
         } catch (IOException e) {
             log.error(e);
 

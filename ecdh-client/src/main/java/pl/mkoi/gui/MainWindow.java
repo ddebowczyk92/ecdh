@@ -51,9 +51,13 @@ public class MainWindow extends JFrame {
         setContentPane(rootPanel);
         setResizable(false);
         setLocationRelativeTo(null);
+
         menuBar = new JMenuBar();
+
         optionsMenu = new JMenu("Options");
-        JMenuItem optionMenuItem = new JMenuItem("Setup connection");
+        final JMenuItem optionMenuItem = new JMenuItem("Setup connection");
+        final JMenuItem userList = new JMenuItem("Available user list");
+
         optionsMenu.add(optionMenuItem);
         optionMenuItem.addActionListener(new ActionListener() {
             @Override
@@ -62,9 +66,28 @@ public class MainWindow extends JFrame {
                     connectionDialog = new ConnectionDialog();
                 }
                 connectionDialog.setVisible(true);
+
+                userList.setEnabled(true);
+
             }
         });
         menuBar.add(optionsMenu);
+
+
+        optionsMenu.add(userList);
+        userList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                if (context.isConnectedToServer()) {
+                UserListDialog userListDialog = new UserListDialog();
+                userListDialog.setVisible(true);
+
+//                }
+            }
+        });
+
+        userList.setEnabled(false);
+
         logTextPane.setEditable(false);
 
         sendButton.addActionListener(new ActionListener() {
