@@ -4,6 +4,11 @@ import com.google.common.base.Strings;
 import org.apache.log4j.Logger;
 import pl.mkoi.AppContext;
 import pl.mkoi.client.Connection;
+import pl.mkoi.ecdh.communication.protocol.MessageType;
+import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
+import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
+import pl.mkoi.ecdh.communication.protocol.payload.Payload;
+import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloResponsePayload;
 import pl.mkoi.gui.util.RegexFormatter;
 import pl.mkoi.model.ServerAddressDetails;
 
@@ -164,6 +169,7 @@ public class ConnectionDialog extends JDialog {
 
     private void tryToConnect(final ServerAddressDetails details) {
         showMessage("Trying to connect...");
+        final String name = nickname.getText().trim();
         SwingWorker<Boolean, Integer> worker = new SwingWorker() {
             @Override
             protected Boolean doInBackground() throws Exception {
@@ -177,6 +183,16 @@ public class ConnectionDialog extends JDialog {
                     AppContext context = AppContext.getInstance();
                     context.setClientConnection(clientConnection);
                     context.setConnectedToServer(true);
+
+                    ProtocolHeader header = new ProtocolHeader(MessageType.SERVER_HELLO_RESPONSE);
+                    header.setSourceId(context.getUserId());
+                    Payload payload = new ServerHelloResponsePayload(name);
+
+                    ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
+                    context.getClientConnection().sendMessage(pdu);
+
+                    System.out.println("dotar³em");
+
                     showMessage("Connected");
                     dispose();
 

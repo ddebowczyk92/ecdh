@@ -87,6 +87,7 @@ public class Connection extends Thread {
     }
 
     public void sendMessage(ProtocolDataUnit message) {
+        message.getHeader().setSourceId(context.getUserId());
         try {
             writeDataToStream(message);
         } catch (IOException e) {

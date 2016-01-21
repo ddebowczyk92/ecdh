@@ -34,8 +34,9 @@ class PayloadAdapter implements JsonSerializer<Payload>, JsonDeserializer<Payloa
         JsonObject retValue = new JsonObject();
         String className = payload.getClass().getName();
         retValue.addProperty(CLASSNAME, className);
-        JsonElement elem = jsonSerializationContext.serialize(retValue);
+        JsonElement elem = jsonSerializationContext.serialize(jsonSerializationContext.serialize(payload));
         retValue.add(INSTANCE, elem);
+
         return retValue;
     }
 }

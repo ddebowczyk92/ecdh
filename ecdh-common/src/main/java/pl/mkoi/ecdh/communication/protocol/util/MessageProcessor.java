@@ -25,11 +25,13 @@ public abstract class MessageProcessor {
                 break;
             case SERVER_HELLO_RESPONSE:
                 onServerHelloResponseReceived(dataUnit);
+                break;
             case LIST_AVAILABLE_HOSTS_REQUEST:
                 onListHostsRequestReceived(dataUnit);
                 break;
             case LIST_AVAILABLE_HOSTS_RESPONSE:
                 onListHostsResponseReceived(dataUnit);
+                break;
             default:
                 throw new NoSuchMethodError();
         }

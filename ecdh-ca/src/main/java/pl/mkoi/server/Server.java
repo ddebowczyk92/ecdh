@@ -1,6 +1,7 @@
 package pl.mkoi.server;
 
 import org.apache.log4j.Logger;
+import pl.mkoi.AppContext;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -40,6 +41,7 @@ public class Server extends Thread {
                 Socket clientSocket = socket.accept();
                 int id = idGenerator.getAndIncrement();
                 Connection newConn = new Connection(id, clientSocket);
+                AppContext.getInstance().addConnection(id, newConn);
                 executorService.submit(newConn);
             }
 

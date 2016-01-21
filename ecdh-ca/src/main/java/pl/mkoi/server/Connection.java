@@ -70,6 +70,7 @@ public class Connection implements Runnable {
     public synchronized void writeDataToStream(ProtocolDataUnit message) {
         String dataToSend = pduReaderWriter.serialize(message);
         out.println(dataToSend);
+        System.out.println("SEND : " + dataToSend);
         out.flush();
     }
 

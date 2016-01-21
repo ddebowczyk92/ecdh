@@ -1,5 +1,7 @@
 package pl.mkoi.ecdh.communication.protocol.payload;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,7 @@ import java.util.List;
  */
 public class AvailableHostsResponsePayload extends Payload {
 
+    @SerializedName("hosts")
     private List<NicknameId> hosts = new ArrayList<>();
 
     public List<NicknameId> getHosts() {
@@ -21,6 +24,16 @@ public class AvailableHostsResponsePayload extends Payload {
     public void addHost(String nickname, int id) {
         NicknameId nicknameId = new NicknameId(nickname, id);
         hosts.add(nicknameId);
+    }
+
+    public String[] getNames() {
+        String[] list = new String[hosts.size()];
+
+        for (int i = 0; i < hosts.size(); i++) {
+            list[i] = hosts.get(i).getNickname();
+        }
+
+        return list;
     }
 
     public class NicknameId {
@@ -40,5 +53,6 @@ public class AvailableHostsResponsePayload extends Payload {
             return id;
         }
     }
+
 }
 
