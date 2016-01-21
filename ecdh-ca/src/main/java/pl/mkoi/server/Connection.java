@@ -11,6 +11,7 @@ import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
 import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloResponsePayload;
 import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
+import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,7 +54,8 @@ public class Connection implements Runnable {
             running = true;
             ProtocolHeader header = new ProtocolHeader();
             header.setMessageType(MessageType.SERVER_HELLO);
-            Payload payload = new ServerHelloPayload(id);
+            String publicKeyString = SignatureKeyPairGenerator.getPublicKeyEncoded(context.getPublicKey());
+            Payload payload = new ServerHelloPayload(id, publicKeyString);
             ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
             writeDataToStream(pdu);
             String stringData;

@@ -6,6 +6,7 @@ import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
 import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
+import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
 import pl.mkoi.ecdh.event.ListHostsResponseEvent;
 import pl.mkoi.ecdh.event.ServerInterruptEvent;
 import pl.mkoi.ecdh.event.SimpleMessageEvent;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.security.PublicKey;
 
 /**
  * Created by DominikD on 2016-01-19.
@@ -75,8 +77,9 @@ public class Connection extends Thread {
             @Override
             protected void onServerHelloReceived(ProtocolDataUnit pdu) {
                 ServerHelloPayload payload = (ServerHelloPayload) pdu.getPayload();
+                PublicKey publicKey = SignatureKeyPairGenerator.decodePublicKey(payload.getServerPublicKey());
                 context.setUserId(payload.getId());
-
+                context.setServerPublicKey(publicKey);
             }
         };
     }

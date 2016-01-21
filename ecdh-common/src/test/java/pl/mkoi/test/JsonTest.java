@@ -9,7 +9,7 @@ public class JsonTest {
     @Test
     public void JsonTest() {
         Gson gson = new Gson();
-        System.out.println(gson.toJson(new ServerHelloPayload(3)).toString());
+        System.out.println(gson.toJson(new ServerHelloPayload(3,"xx")).toString());
 
     }
 

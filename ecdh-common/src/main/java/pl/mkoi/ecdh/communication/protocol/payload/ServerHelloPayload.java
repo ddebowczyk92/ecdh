@@ -1,22 +1,19 @@
 package pl.mkoi.ecdh.communication.protocol.payload;
 
-import com.google.gson.annotations.SerializedName;
-
 public class ServerHelloPayload extends Payload {
+    private final int id;
+    private final String serverPublicKey;
 
-    @SerializedName("id")
-    private int id;
-
-    public ServerHelloPayload(int id) {
+    public ServerHelloPayload(int id, String serverPublicKey) {
         this.id = id;
-
+        this.serverPublicKey = serverPublicKey;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getServerPublicKey() {
+        return serverPublicKey;
     }
 }

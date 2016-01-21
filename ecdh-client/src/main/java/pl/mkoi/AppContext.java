@@ -5,6 +5,8 @@ import pl.mkoi.client.Connection;
 import pl.mkoi.ecdh.event.Event;
 import pl.mkoi.model.ServerAddressDetails;
 
+import java.security.PublicKey;
+
 /**
  * Created by DominikD on 2016-01-17.
  */
@@ -16,6 +18,7 @@ public class AppContext {
     private boolean connectedToServer;
     private String userNickName;
     private int userId;
+    private PublicKey serverPublicKey;
     private EventBus eventBus = new EventBus("ClientEventBus");
 
     public static synchronized AppContext getInstance() {
@@ -63,6 +66,14 @@ public class AppContext {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public PublicKey getServerPublicKey() {
+        return serverPublicKey;
+    }
+
+    public void setServerPublicKey(PublicKey serverPublicKey) {
+        this.serverPublicKey = serverPublicKey;
     }
 
     public void registerListener(Object obj) {
