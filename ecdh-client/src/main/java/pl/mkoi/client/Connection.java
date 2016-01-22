@@ -11,6 +11,7 @@ import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
 import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloResponsePayload;
 import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
+import pl.mkoi.ecdh.crypto.util.KeyGenerator;
 import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
 import pl.mkoi.ecdh.event.*;
 
@@ -85,9 +86,11 @@ public class Connection extends Thread {
                 context.setUserId(payload.getId());
                 context.setServerPublicKey(publicKey);
 
-
                 ProtocolHeader header = new ProtocolHeader(MessageType.SERVER_HELLO_RESPONSE);
                 header.setSourceId(context.getUserId());
+
+                context.setMyKeyPair(KeyGenerator.generateKeyPair(context.getCurve()));
+
 
                 Payload newPayload = new ServerHelloResponsePayload(context.getUserNickName());
                 ProtocolDataUnit newPdu = new ProtocolDataUnit(header, newPayload);
