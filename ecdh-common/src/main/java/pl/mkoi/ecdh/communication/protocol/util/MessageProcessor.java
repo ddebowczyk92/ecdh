@@ -35,6 +35,12 @@ public abstract class MessageProcessor {
             case CLIENT_DISCONNECT:
                 onClientDisconnected(dataUnit);
                 break;
+            case CLIENT_CONNECT_REQUEST:
+                onClientConnectRequest(dataUnit);
+                break;
+            case CLIENT_CONNECT_RESPONSE:
+                onClientConnectRequestResponse(dataUnit);
+                break;
             default:
                 throw new NoSuchMethodError();
         }
@@ -62,5 +68,12 @@ public abstract class MessageProcessor {
         throw new NotImplementedException();
     }
 
+    protected void onClientConnectRequest(ProtocolDataUnit pdu) {
+        throw new NotImplementedException();
+    }
+
+    protected void onClientConnectRequestResponse(ProtocolDataUnit pdu) {
+        throw new NotImplementedException();
+    }
 
 }

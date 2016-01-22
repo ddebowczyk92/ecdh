@@ -18,6 +18,8 @@ public class AppContext {
     private boolean connectedToServer;
     private String userNickName;
     private int userId;
+    private boolean connectedWithUser;
+    private int connectedUserId = -1;
     private PublicKey serverPublicKey;
     private EventBus eventBus = new EventBus("CLIENT_EVENT_BUS");
 
@@ -74,6 +76,22 @@ public class AppContext {
 
     public void setServerPublicKey(PublicKey serverPublicKey) {
         this.serverPublicKey = serverPublicKey;
+    }
+
+    public boolean isConnectedWithUser() {
+        return connectedWithUser;
+    }
+
+    public void setConnectedWithUser(boolean connectedWithUser) {
+        this.connectedWithUser = connectedWithUser;
+    }
+
+    public int getConnectedUserId() {
+        return connectedUserId;
+    }
+
+    public void setConnectedUserId(int connectedUserId) {
+        this.connectedUserId = connectedUserId;
     }
 
     public void registerListener(Object obj) {

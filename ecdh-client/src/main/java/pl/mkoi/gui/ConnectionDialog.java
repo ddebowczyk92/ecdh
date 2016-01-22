@@ -133,12 +133,15 @@ public class ConnectionDialog extends JDialog {
             isDataValid = false;
         }
         details.setNickName(nickname.getText());
+        AppContext.getInstance().setUserNickName(details.getNickName());
         if (isDataValid) {
 
             tryToConnect(details);
         } else {
             showMessage(errorBuilder.toString());
         }
+
+
     }
 
     private boolean isIpValid(String ip) {

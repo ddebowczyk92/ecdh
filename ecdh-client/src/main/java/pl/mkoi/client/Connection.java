@@ -8,10 +8,7 @@ import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
 import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
 import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
-import pl.mkoi.ecdh.event.DisconnectEvent;
-import pl.mkoi.ecdh.event.ListHostsResponseEvent;
-import pl.mkoi.ecdh.event.ServerInterruptEvent;
-import pl.mkoi.ecdh.event.SimpleMessageEvent;
+import pl.mkoi.ecdh.event.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,6 +86,16 @@ public class Connection extends Thread {
                 DisconnectedPayload payload = (DisconnectedPayload) pdu.getPayload();
                 context.postEvent(new DisconnectEvent(payload.clientId));
             }
+
+            @Override
+            protected void onClientConnectRequest(ProtocolDataUnit pdu) {
+                context.postEvent(new ConnectionRequestEvent(pdu));
+            }
+
+            @Override
+            protected void onClientConnectRequestResponse(ProtocolDataUnit pdu) {
+                context.postEvent(new ConnectionRequestResponseEvent(pdu));
+            }
         };
     }
 
@@ -107,6 +114,7 @@ public class Connection extends Thread {
     }
 
     private void writeDataToStream(ProtocolDataUnit message) throws IOException {
+        message.getHeader().setSourceId(context.getUserId());
         String dataToSend = pduReaderWriter.serialize(message);
         out.println(dataToSend);
         out.flush();

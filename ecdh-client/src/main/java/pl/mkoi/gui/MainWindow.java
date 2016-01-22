@@ -2,9 +2,15 @@ package pl.mkoi.gui;
 
 import com.google.common.eventbus.Subscribe;
 import pl.mkoi.AppContext;
-import pl.mkoi.ecdh.communication.protocol.*;
+import pl.mkoi.ecdh.communication.protocol.MessageType;
+import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
+import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
+import pl.mkoi.ecdh.communication.protocol.payload.ConnectRequestPayload;
+import pl.mkoi.ecdh.communication.protocol.payload.ConnectRequestResponsePayload;
 import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
 import pl.mkoi.ecdh.communication.protocol.payload.SimpleMessagePayload;
+import pl.mkoi.ecdh.event.ConnectionRequestEvent;
+import pl.mkoi.ecdh.event.ConnectionRequestResponseEvent;
 import pl.mkoi.ecdh.event.SimpleMessageEvent;
 
 import javax.swing.*;
@@ -110,6 +116,7 @@ public class MainWindow extends JFrame {
         setVisible(true);
     }
 
+
     @Subscribe
     public void onMessage(final SimpleMessageEvent event) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -121,5 +128,60 @@ public class MainWindow extends JFrame {
                 logTextPane.setText(buffer.toString());
             }
         });
+    }
+
+    @Subscribe
+    public void onConnectionRequest(ConnectionRequestEvent event) {
+        showConnectionRequestDialog(event.getPdu());
+    }
+
+    @Subscribe
+    public void onConnectionRequestResponse(ConnectionRequestResponseEvent event) {
+        ProtocolDataUnit pdu = event.getPdu();
+        ProtocolHeader header = pdu.getHeader();
+        ConnectRequestResponsePayload payload = (ConnectRequestResponsePayload) pdu.getPayload();
+        showConnectionRequestResponseDialog(payload.hasAccepted());
+        if (payload.hasAccepted()) {
+            context.setConnectedUserId(header.getSourceId());
+            context.setConnectedWithUser(true);
+        }
+    }
+
+
+    private void showConnectionRequestDialog(ProtocolDataUnit pdu) {
+        ProtocolHeader header = pdu.getHeader();
+        ConnectRequestPayload payload = (ConnectRequestPayload) pdu.getPayload();
+        int n = JOptionPane.showConfirmDialog(this, payload.getNickname() + " wants to talk with you! Do you accept this connection request?", "Connection request", JOptionPane.YES_NO_OPTION);
+        boolean response = false;
+        if (n == 0) {
+            response = true;
+        } else if (n == 1) {
+            response = false;
+        }
+        sendConnectionRequestResponse(header.getSourceId(), response);
+    }
+
+    private void showConnectionRequestResponseDialog(boolean accept) {
+        String responseMessage;
+        if (accept) {
+            responseMessage = "Connection request accepted";
+        } else {
+            responseMessage = "Connection request rejected";
+        }
+        JOptionPane.showMessageDialog(this, responseMessage);
+    }
+
+    private void sendConnectionRequestResponse(final int destinationId, final boolean accept) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ProtocolHeader header = new ProtocolHeader(MessageType.CLIENT_CONNECT_RESPONSE);
+                header.setDestinationId(destinationId);
+                ConnectRequestResponsePayload payload = new ConnectRequestResponsePayload(accept);
+                ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
+                context.getClientConnection().sendMessage(pdu);
+            }
+        });
+
     }
 }

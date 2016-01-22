@@ -104,7 +104,24 @@ public class Connection implements Runnable {
                 ProtocolDataUnit newPdu = new ProtocolDataUnit(header, payload);
                 writeDataToStream(newPdu);
             }
+
+            @Override
+            protected void onClientConnectRequest(ProtocolDataUnit pdu) {
+                Connection connection = context.getConnection(pdu.getHeader().getDestinationId());
+                connection.writeDataToStream(pdu);
+            }
+
+            @Override
+            protected void onClientConnectRequestResponse(ProtocolDataUnit pdu) {
+                ConnectRequestResponsePayload payload = (ConnectRequestResponsePayload) pdu.getPayload();
+                //TODO Add storage for connections between hosts
+                //TODO Add connection between hosts info to storage
+                Connection connection = context.getConnection(pdu.getHeader().getDestinationId());
+                connection.writeDataToStream(pdu);
+            }
         };
+
+
     }
 
     private void processData(String data) {
@@ -166,6 +183,4 @@ public class Connection implements Runnable {
             writeDataToStream(pdu);
         }
     }
-
-
 }

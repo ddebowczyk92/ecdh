@@ -7,6 +7,7 @@ import pl.mkoi.ecdh.communication.protocol.MessageType;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
 import pl.mkoi.ecdh.communication.protocol.payload.AvailableHostsResponsePayload;
+import pl.mkoi.ecdh.communication.protocol.payload.ConnectRequestPayload;
 import pl.mkoi.ecdh.event.ListHostsResponseEvent;
 
 import javax.swing.*;
@@ -60,7 +61,7 @@ public class UserListDialog extends JDialog {
         connectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tryConnectToUser(list.getSelectedIndex());
+                tryConnectToUser((String) list.getSelectedValue());
             }
         });
 
@@ -84,11 +85,29 @@ public class UserListDialog extends JDialog {
 
     }
 
-    private void tryConnectToUser(int selectedIndex) {
-        //try connect
-//        hosts.get(selectedIndex);
-        //dispose dialog if success
-        log.info(selectedIndex);
+    private void tryConnectToUser(final String selectedValue) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                AppContext context = AppContext.getInstance();
+                int selectedId = getIdForNickname(selectedValue);
+                ProtocolHeader header = new ProtocolHeader(MessageType.CLIENT_CONNECT_REQUEST);
+                header.setDestinationId(selectedId);
+                ConnectRequestPayload payload = new ConnectRequestPayload(context.getUserNickName());
+                ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
+                context.getClientConnection().sendMessage(pdu);
+                dispose();
+            }
+        });
+    }
+
+    public int getIdForNickname(String nickname) {
+        for (AvailableHostsResponsePayload.NicknameId nicknameId : hosts) {
+            if (nicknameId.getNickname().equals(nickname)) {
+                return nicknameId.getId();
+            }
+        }
+        return -1;
     }
 
     private void onCancel() {
