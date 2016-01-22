@@ -7,7 +7,6 @@ import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
 import pl.mkoi.ecdh.communication.protocol.payload.ConnectRequestPayload;
 import pl.mkoi.ecdh.communication.protocol.payload.ConnectRequestResponsePayload;
-import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
 import pl.mkoi.ecdh.communication.protocol.payload.SimpleMessagePayload;
 import pl.mkoi.ecdh.event.ConnectionRequestEvent;
 import pl.mkoi.ecdh.event.ConnectionRequestResponseEvent;
@@ -102,9 +101,13 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AppContext context = AppContext.getInstance();
-                if (context.isConnectedToServer()) {
+                if (context.isConnectedToServer() && context.getConnectedUserId() != -1) {
                     ProtocolHeader header = new ProtocolHeader();
+
+                    header.setSourceId(context.getUserId());
+                    header.setDestinationId(context.getConnectedUserId());
                     header.setMessageType(MessageType.SIMPLE_MESSAGE);
+
                     SimpleMessagePayload payload = new SimpleMessagePayload(inputField.getText());
                     ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
                     context.getClientConnection().sendMessage(pdu);
@@ -122,9 +125,9 @@ public class MainWindow extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ServerHelloPayload payload = (ServerHelloPayload) event.getPdu().getPayload();
+                SimpleMessagePayload payload = (SimpleMessagePayload) event.getPdu().getPayload();
                 StringBuffer buffer = new StringBuffer(logTextPane.getText());
-                buffer.append(payload.getId() + "\n");
+                buffer.append(context.getConnectedUserName() + " send: " + payload.getMessage() + "\n");
                 logTextPane.setText(buffer.toString());
             }
         });
@@ -155,6 +158,8 @@ public class MainWindow extends JFrame {
         boolean response = false;
         if (n == 0) {
             response = true;
+            context.setConnectedUserId(header.getSourceId());
+            context.setConnectedUserName(payload.getNickname());
         } else if (n == 1) {
             response = false;
         }

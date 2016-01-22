@@ -22,12 +22,13 @@ public class AppContext {
     private int connectedUserId = -1;
     private PublicKey serverPublicKey;
     private EventBus eventBus = new EventBus("CLIENT_EVENT_BUS");
+    private String connectedUserName;
+
+    private AppContext() {
+    }
 
     public static synchronized AppContext getInstance() {
         return ourInstance;
-    }
-
-    private AppContext() {
     }
 
     public ServerAddressDetails getServerAddressDetails() {
@@ -100,5 +101,13 @@ public class AppContext {
 
     public void postEvent(Event event) {
         this.eventBus.post(event);
+    }
+
+    public String getConnectedUserName() {
+        return connectedUserName;
+    }
+
+    public void setConnectedUserName(String connectedUserName) {
+        this.connectedUserName = connectedUserName;
     }
 }

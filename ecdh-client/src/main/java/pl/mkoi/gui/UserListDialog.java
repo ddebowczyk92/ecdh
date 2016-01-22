@@ -95,6 +95,7 @@ public class UserListDialog extends JDialog {
                 header.setDestinationId(selectedId);
                 ConnectRequestPayload payload = new ConnectRequestPayload(context.getUserNickName());
                 ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
+                context.setConnectedUserName(selectedValue);
                 context.getClientConnection().sendMessage(pdu);
                 dispose();
             }
