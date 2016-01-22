@@ -45,7 +45,6 @@ public class Server extends Thread {
                 AppContext.getInstance().registerListener(newConn);
                 executorService.submit(newConn);
             }
-
         } catch (IOException e) {
             log.error("Error while running server", e);
             stopServer();
@@ -81,6 +80,5 @@ public class Server extends Thread {
     public int getConnectionLimit() {
         return connectionLimit;
     }
-
 
 }

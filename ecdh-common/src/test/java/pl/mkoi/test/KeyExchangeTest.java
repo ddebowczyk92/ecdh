@@ -3,15 +3,15 @@ package pl.mkoi.test;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
+import pl.mkoi.ecdh.crypto.model.*;
 import pl.mkoi.ecdh.crypto.util.KeyGenerator;
 import pl.mkoi.ecdh.crypto.util.PointGenerator;
-import pl.mkoi.ecdh.crypto.model.*;
 
 public class KeyExchangeTest {
 
     private final static Logger log = Logger.getLogger(PointGenerator.class);
 
-    //@Test
+    @Test
     public void keyExchangeTest() {
         int m = 6;
 

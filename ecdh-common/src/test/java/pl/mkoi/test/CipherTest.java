@@ -10,7 +10,7 @@ import java.util.Random;
 
 
 public class CipherTest {
-    private final static Logger log = Logger.getLogger(GeneratorTest.class);
+    private final static Logger log = Logger.getLogger(CipherTest.class);
 
     @Test
     public void cipherTest() {

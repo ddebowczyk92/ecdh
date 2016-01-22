@@ -155,4 +155,10 @@ public class EllipticCurve {
     public FiniteField getField() {
         return field;
     }
+
+    @Override
+    public String toString() {
+        return "\n Elliptic Curve with parameters: a = " + a.toBinaryString() + " b = "
+                + b.toBinaryString() + "\n Generator Point " + generatorPoint + "\n";
+    }
 }

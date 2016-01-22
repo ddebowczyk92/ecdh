@@ -1,5 +1,7 @@
 package pl.mkoi.generator;
 
+import pl.mkoi.ecdh.crypto.model.Polynomial;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +21,7 @@ public class DomainParametersGenerator {
         ;
     }
 
-    public void runGenerator() {
-        scheduler.scheduleWithFixedDelay(new DomainParametersJob(), 0, 15, TimeUnit.SECONDS);
+    public void runGenerator(int m, Polynomial a, Polynomial b) {
+        scheduler.scheduleWithFixedDelay(new DomainParametersJob(m, a, b), 0, 15, TimeUnit.SECONDS);
     }
 }
