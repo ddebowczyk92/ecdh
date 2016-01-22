@@ -3,6 +3,7 @@ package pl.mkoi;
 import com.google.common.eventbus.EventBus;
 import pl.mkoi.client.Connection;
 import pl.mkoi.ecdh.crypto.model.EllipticCurve;
+import pl.mkoi.ecdh.crypto.model.KeyPair;
 import pl.mkoi.ecdh.event.Event;
 import pl.mkoi.model.ServerAddressDetails;
 
@@ -25,6 +26,7 @@ public class AppContext {
     private EventBus eventBus = new EventBus("CLIENT_EVENT_BUS");
     private String connectedUserName;
     private EllipticCurve curve;
+    private KeyPair myKeyPair;
 
     private AppContext() {
     }
@@ -119,5 +121,13 @@ public class AppContext {
 
     public void setCurve(EllipticCurve curve) {
         this.curve = curve;
+    }
+
+    public KeyPair getMyKeyPair() {
+        return myKeyPair;
+    }
+
+    public void setMyKeyPair(KeyPair myKeyPair) {
+        this.myKeyPair = myKeyPair;
     }
 }
