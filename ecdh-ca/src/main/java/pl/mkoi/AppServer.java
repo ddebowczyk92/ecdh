@@ -32,7 +32,7 @@ public class AppServer {
 
     @Subscribe
     public void onCurveCalculated(final CurveCalculatedEvent event) {
-        event.getCurve();
+        AppContext.getInstance().setCurve(event.getCurve());
 
         Server server = new Server(455, 10);
         server.run();

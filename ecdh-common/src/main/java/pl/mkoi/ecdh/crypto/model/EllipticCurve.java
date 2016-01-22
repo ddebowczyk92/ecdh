@@ -25,11 +25,6 @@ public class EllipticCurve {
 
     private Polynomial irreduciblePolynomial;
 
-    /**
-     * Scalar range +1;
-     */
-    private int n;
-
 
     /**
      * Creates Elliptic curve for given parameters
@@ -127,7 +122,6 @@ public class EllipticCurve {
         return b;
     }
 
-
     public Point getGeneratorPoint() {
         return generatorPoint;
     }
@@ -144,14 +138,6 @@ public class EllipticCurve {
         this.irreduciblePolynomial = irreduciblePolynomial;
     }
 
-    public int getN() {
-        return n;
-    }
-
-    public void setN(int n) {
-        this.n = n;
-    }
-
     public FiniteField getField() {
         return field;
     }
@@ -159,6 +145,6 @@ public class EllipticCurve {
     @Override
     public String toString() {
         return "\n Elliptic Curve with parameters: a = " + a.toBinaryString() + " b = "
-                + b.toBinaryString() + "\n Generator Point " + generatorPoint + "\n";
+                + b.toBinaryString() + "\n Generator Point " + generatorPoint;
     }
 }

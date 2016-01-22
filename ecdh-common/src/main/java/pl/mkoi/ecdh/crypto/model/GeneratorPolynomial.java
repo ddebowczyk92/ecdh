@@ -11,7 +11,7 @@ public class GeneratorPolynomial extends Polynomial {
 
     private static final Logger log = Logger.getLogger(GeneratorPolynomial.class);
 
-    private HashBiMap<Long, Polynomial> generatorPowers;
+    private transient HashBiMap<Long, Polynomial> generatorPowers;
 
     public GeneratorPolynomial(Polynomial polynomial, HashBiMap<Long, Polynomial> generatorPowers) {
         super(polynomial);

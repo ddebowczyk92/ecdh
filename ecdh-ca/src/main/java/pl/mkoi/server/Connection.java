@@ -54,7 +54,7 @@ public class Connection implements Runnable {
             ProtocolHeader header = new ProtocolHeader();
             header.setMessageType(MessageType.SERVER_HELLO);
             String publicKeyString = SignatureKeyPairGenerator.getPublicKeyEncoded(context.getPublicKey());
-            Payload payload = new ServerHelloPayload(id, publicKeyString);
+            Payload payload = new ServerHelloPayload(id, publicKeyString, context.getCurve());
             ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
             writeDataToStream(pdu);
             String stringData;

@@ -11,7 +11,7 @@ public class JsonTest {
     @Test
     public void JsonTest() {
         Gson gson = new Gson();
-        log.debug(gson.toJson(new ServerHelloPayload(3, "xx")));
+        log.debug(gson.toJson(new ServerHelloPayload(3, "xx", null)));
 
     }
 

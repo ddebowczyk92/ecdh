@@ -4,11 +4,6 @@ import com.google.common.base.Strings;
 import org.apache.log4j.Logger;
 import pl.mkoi.AppContext;
 import pl.mkoi.client.Connection;
-import pl.mkoi.ecdh.communication.protocol.MessageType;
-import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
-import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
-import pl.mkoi.ecdh.communication.protocol.payload.Payload;
-import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloResponsePayload;
 import pl.mkoi.gui.util.RegexFormatter;
 import pl.mkoi.model.ServerAddressDetails;
 
@@ -173,6 +168,8 @@ public class ConnectionDialog extends JDialog {
     private void tryToConnect(final ServerAddressDetails details) {
         showMessage("Trying to connect...");
         final String name = nickname.getText().trim();
+        final AppContext context = AppContext.getInstance();
+        context.setUserNickName(name);
         SwingWorker<Boolean, Integer> worker = new SwingWorker() {
             @Override
             protected Boolean doInBackground() throws Exception {
@@ -183,16 +180,9 @@ public class ConnectionDialog extends JDialog {
                     clientSocket.connect(new InetSocketAddress(details.getIpAddress(), (int) details.getPort()), 10000);
                     Connection clientConnection = new Connection(clientSocket);
                     clientConnection.start();
-                    AppContext context = AppContext.getInstance();
+
                     context.setClientConnection(clientConnection);
                     context.setConnectedToServer(true);
-
-                    ProtocolHeader header = new ProtocolHeader(MessageType.SERVER_HELLO_RESPONSE);
-                    header.setSourceId(context.getUserId());
-                    Payload payload = new ServerHelloResponsePayload(name);
-
-                    ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
-                    context.getClientConnection().sendMessage(pdu);
 
                     showMessage("Connected");
                     dispose();

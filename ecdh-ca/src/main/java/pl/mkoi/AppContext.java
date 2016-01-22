@@ -2,6 +2,7 @@ package pl.mkoi;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import pl.mkoi.ecdh.crypto.model.EllipticCurve;
 import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
 import pl.mkoi.ecdh.event.DisconnectEvent;
 import pl.mkoi.ecdh.event.Event;
@@ -21,14 +22,15 @@ public class AppContext {
     private final KeyPair keyPair;
     private ConcurrentHashMap<Integer, Connection> connections = new ConcurrentHashMap<>();
     private EventBus eventBus = new EventBus("SERVER_EVENT_BUS");
-
-    public static AppContext getInstance() {
-        return ourInstance;
-    }
+    private EllipticCurve curve;
 
     private AppContext() {
         keyPair = SignatureKeyPairGenerator.generateSignatureKeyPair();
         eventBus.register(this);
+    }
+
+    public static AppContext getInstance() {
+        return ourInstance;
     }
 
     public void addConnection(int id, Connection connection) {
@@ -71,4 +73,11 @@ public class AppContext {
         connections.remove(event.getConnectionId());
     }
 
+    public EllipticCurve getCurve() {
+        return curve;
+    }
+
+    public void setCurve(EllipticCurve curve) {
+        this.curve = curve;
+    }
 }
