@@ -22,7 +22,6 @@ public class CipherTest {
             Point generatedPoint = new Point(Polynomial.createFromLong(x), Polynomial.createFromLong(y));
 
             String plainText = "to jest kod do zaszyfasdasdasdasdsadsadśąśćąśćąśćąśćąśćąścsrowania, taki w sumie nie za krótki, ani nie za długi. (*&^%$#!^&^@#$@#$@#$ Taki w sumie spoko. Dziwne znaki też są.";
-            System.out.println("INPUT BYTES " + plainText.length());
 
             String encryptedText = AesCipher.encrypt(generatedPoint, plainText);
             assert plainText.equals(AesCipher.decrypt(generatedPoint, encryptedText));

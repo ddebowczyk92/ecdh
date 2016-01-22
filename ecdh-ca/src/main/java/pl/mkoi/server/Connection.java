@@ -1,17 +1,16 @@
 package pl.mkoi.server;
 
+import com.google.common.eventbus.Subscribe;
 import org.apache.log4j.Logger;
 import pl.mkoi.AppContext;
 import pl.mkoi.ecdh.communication.protocol.MessageType;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
-import pl.mkoi.ecdh.communication.protocol.payload.AvailableHostsResponsePayload;
-import pl.mkoi.ecdh.communication.protocol.payload.Payload;
-import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
-import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloResponsePayload;
+import pl.mkoi.ecdh.communication.protocol.payload.*;
 import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
 import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
+import pl.mkoi.ecdh.event.DisconnectEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,16 +63,16 @@ public class Connection implements Runnable {
             }
             closeConnection();
         } catch (IOException e) {
-            log.error(e);
-
+            log.error("Client " + this.id + " disconnected");
+            context.postEvent(new DisconnectEvent(this.id));
         }
     }
 
     public synchronized void writeDataToStream(ProtocolDataUnit message) {
         String dataToSend = pduReaderWriter.serialize(message);
         out.println(dataToSend);
-        System.out.println("SEND : " + dataToSend);
         out.flush();
+        log.debug("SENT :" + dataToSend);
     }
 
     private void setupMessageService() {
@@ -154,6 +153,17 @@ public class Connection implements Runnable {
             } catch (IOException e) {
                 log.error("Error while closing connection id" + getId(), e);
             }
+        }
+        context.postEvent(new DisconnectEvent(this.id));
+    }
+
+    @Subscribe
+    public void onClientDisconnect(DisconnectEvent event) {
+        if (this.id != event.getConnectionId()) {
+            ProtocolHeader header = new ProtocolHeader(MessageType.CLIENT_DISCONNECT);
+            DisconnectedPayload payload = new DisconnectedPayload(event.getConnectionId());
+            ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
+            writeDataToStream(pdu);
         }
     }
 

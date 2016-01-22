@@ -19,7 +19,7 @@ public class AppContext {
     private String userNickName;
     private int userId;
     private PublicKey serverPublicKey;
-    private EventBus eventBus = new EventBus("ClientEventBus");
+    private EventBus eventBus = new EventBus("CLIENT_EVENT_BUS");
 
     public static synchronized AppContext getInstance() {
         return ourInstance;

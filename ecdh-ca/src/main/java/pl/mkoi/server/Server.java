@@ -42,6 +42,7 @@ public class Server extends Thread {
                 int id = idGenerator.getAndIncrement();
                 Connection newConn = new Connection(id, clientSocket);
                 AppContext.getInstance().addConnection(id, newConn);
+                AppContext.getInstance().registerListener(newConn);
                 executorService.submit(newConn);
             }
 

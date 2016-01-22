@@ -32,6 +32,9 @@ public abstract class MessageProcessor {
             case LIST_AVAILABLE_HOSTS_RESPONSE:
                 onListHostsResponseReceived(dataUnit);
                 break;
+            case CLIENT_DISCONNECT:
+                onClientDisconnected(dataUnit);
+                break;
             default:
                 throw new NoSuchMethodError();
         }
@@ -55,6 +58,9 @@ public abstract class MessageProcessor {
         throw new NotImplementedException();
     }
 
+    protected void onClientDisconnected(ProtocolDataUnit pdu) {
+        throw new NotImplementedException();
+    }
 
 
 }

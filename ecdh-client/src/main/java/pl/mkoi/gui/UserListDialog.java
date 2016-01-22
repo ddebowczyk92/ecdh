@@ -37,7 +37,7 @@ public class UserListDialog extends JDialog {
                 onCancel();
             }
         });
-
+        AppContext.getInstance().registerListener(this);
         contentPane.registerKeyboardAction(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
@@ -72,12 +72,16 @@ public class UserListDialog extends JDialog {
     }
 
     private void updateListRequests() {
-        ProtocolHeader header = new ProtocolHeader();
-        header.setMessageType(MessageType.LIST_AVAILABLE_HOSTS_REQUEST);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ProtocolHeader header = new ProtocolHeader();
+                header.setMessageType(MessageType.LIST_AVAILABLE_HOSTS_REQUEST);
+                ProtocolDataUnit pdu = new ProtocolDataUnit(header, null);
+                AppContext.getInstance().getClientConnection().sendMessage(pdu);
+            }
+        });
 
-        ProtocolDataUnit pdu = new ProtocolDataUnit(header, null);
-        AppContext.getInstance().registerListener(this);
-        AppContext.getInstance().getClientConnection().sendMessage(pdu);
     }
 
     private void tryConnectToUser(int selectedIndex) {
@@ -93,13 +97,14 @@ public class UserListDialog extends JDialog {
 
     @Subscribe
     public void onMessage(final ListHostsResponseEvent event) {
-        AvailableHostsResponsePayload payload = (AvailableHostsResponsePayload) event.getPdu().getPayload();
-        hosts = payload.getHosts();
-
-        list.setListData(payload.getNames());
-
-
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                AvailableHostsResponsePayload payload = (AvailableHostsResponsePayload) event.getPdu().getPayload();
+                hosts = payload.getHosts();
+                list.setListData(payload.getNames());
+            }
+        });
     }
-
 
 }

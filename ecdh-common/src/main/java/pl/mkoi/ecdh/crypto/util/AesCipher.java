@@ -65,7 +65,6 @@ public class AesCipher {
         for (int i = 0; i < key.length; i++) {
             key[i] = pointsAdded[i % pointsAdded.length];
         }
-        System.out.println(key.length);
         return key;
     }
 

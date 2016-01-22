@@ -25,9 +25,9 @@ public class EllipticCurvePointsOperations {
         Polynomial a = Polynomial.createFromLong(8L);
         Polynomial b = Polynomial.createFromLong(9L);
 
-        System.out.println("Polynomial " + irreducible.toBinaryString());
-        System.out.println("Generator " + generator.toBinaryString());
-        System.out.println("CURVE PARAMETERS: a: " + a + " CURVE PARAMETERS: b: " + b);
+        log.debug("Polynomial " + irreducible.toBinaryString());
+        log.debug("Generator " + generator.toBinaryString());
+        log.debug("CURVE PARAMETERS: a: " + a + " CURVE PARAMETERS: b: " + b);
 
         EllipticCurve curve = new EllipticCurve(a, b, field, irreducible);
 
@@ -41,24 +41,24 @@ public class EllipticCurvePointsOperations {
 
         Point point = curve.addPoint(new Point(x1, y1), new Point(x2, y2));
 
-        System.out.println(x1.toString());
-        System.out.println(y1.toString());
+        log.debug(x1.toString());
+        log.debug(y1.toString());
 
-        System.out.println(x2.toString());
-        System.out.println(y2.toString());
+        log.debug(x2.toString());
+        log.debug(y2.toString());
 
-        System.out.println(point.toString());
+        log.debug(point.toString());
 
-        System.out.println("---------------------------------------");
+        log.debug("---------------------------------------");
 
         x1 = Polynomial.createFromLong(2L);
         y1 = Polynomial.createFromLong(15L);
         point = curve.addPoint(new Point(x1, y1), new Point(x1, y1));
 
-        System.out.println(x1.toString());
-        System.out.println(y1.toString());
+        log.debug(x1.toString());
+        log.debug(y1.toString());
 
-        System.out.println(point.toString());
+        log.debug(point.toString());
 
         Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, new Point(x1, y1)));
         Assert.assertTrue(EllipticCurve.checkIfPointSatisfiesEquation(curve, new Point(x2, y2)));

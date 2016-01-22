@@ -3,10 +3,12 @@ package pl.mkoi.client;
 import org.apache.log4j.Logger;
 import pl.mkoi.AppContext;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
+import pl.mkoi.ecdh.communication.protocol.payload.DisconnectedPayload;
 import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
 import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
 import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
+import pl.mkoi.ecdh.event.DisconnectEvent;
 import pl.mkoi.ecdh.event.ListHostsResponseEvent;
 import pl.mkoi.ecdh.event.ServerInterruptEvent;
 import pl.mkoi.ecdh.event.SimpleMessageEvent;
@@ -58,7 +60,7 @@ public class Connection extends Thread {
 
 
         } catch (IOException e) {
-            log.error("Error while sending data", e);
+            log.error("Closed connection");
         }
     }
 
@@ -80,6 +82,12 @@ public class Connection extends Thread {
                 PublicKey publicKey = SignatureKeyPairGenerator.decodePublicKey(payload.getServerPublicKey());
                 context.setUserId(payload.getId());
                 context.setServerPublicKey(publicKey);
+            }
+
+            @Override
+            protected void onClientDisconnected(ProtocolDataUnit pdu) {
+                DisconnectedPayload payload = (DisconnectedPayload) pdu.getPayload();
+                context.postEvent(new DisconnectEvent(payload.clientId));
             }
         };
     }

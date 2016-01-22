@@ -191,8 +191,6 @@ public class ConnectionDialog extends JDialog {
                     ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
                     context.getClientConnection().sendMessage(pdu);
 
-                    System.out.println("dotar³em");
-
                     showMessage("Connected");
                     dispose();
 
