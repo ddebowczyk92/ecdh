@@ -123,15 +123,11 @@ public class AppContext {
         this.curve = curve;
     }
 
-    public void setMyKeyPair(KeyPair myKeyPair) {
-        this.myKeyPair = myKeyPair;
-    }
-
-    public void setMyKeyPair(KeyPair myKeyPair) {
-        this.myKeyPair = myKeyPair;
-    }
-
     public KeyPair getMyKeyPair() {
         return myKeyPair;
+    }
+
+    public void setMyKeyPair(KeyPair myKeyPair) {
+        this.myKeyPair = myKeyPair;
     }
 }
