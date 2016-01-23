@@ -8,9 +8,9 @@ import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
 import pl.mkoi.ecdh.communication.protocol.payload.ConnectRequestPayload;
 import pl.mkoi.ecdh.communication.protocol.payload.ConnectRequestResponsePayload;
 import pl.mkoi.ecdh.communication.protocol.payload.SimpleMessagePayload;
-import pl.mkoi.ecdh.event.ConnectionRequestEvent;
-import pl.mkoi.ecdh.event.ConnectionRequestResponseEvent;
-import pl.mkoi.ecdh.event.SimpleMessageEvent;
+import pl.mkoi.ecdh.communication.protocol.payload.diffiehellman.DHInvitePayload;
+import pl.mkoi.ecdh.crypto.util.AesCipher;
+import pl.mkoi.ecdh.event.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -97,28 +97,59 @@ public class MainWindow extends JFrame {
 
         logTextPane.setEditable(false);
 
+        sendButton.setEnabled(false);
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                AppContext context = AppContext.getInstance();
-                if (context.isConnectedToServer() && context.getConnectedUserId() != -1) {
-                    ProtocolHeader header = new ProtocolHeader();
-
-                    header.setSourceId(context.getUserId());
-                    header.setDestinationId(context.getConnectedUserId());
-                    header.setMessageType(MessageType.SIMPLE_MESSAGE);
-
-                    SimpleMessagePayload payload = new SimpleMessagePayload(inputField.getText());
-                    ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
-                    context.getClientConnection().sendMessage(pdu);
-                }
+                sendDHInvite();
             }
         });
-
         setJMenuBar(menuBar);
         setVisible(true);
     }
 
+    private void sendDHInvite() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (context.isConnectedToServer() && context.getConnectedUserId() != -1) {
+                    ProtocolHeader header = new ProtocolHeader();
+                    header.setSourceId(context.getUserId());
+                    header.setDestinationId(context.getConnectedUserId());
+                    header.setMessageType(MessageType.DH_INVITE);
+                    DHInvitePayload payload = new DHInvitePayload(context.getMyKeyPair().getPublicKey());
+                    context.getClientConnection().sendMessage(new ProtocolDataUnit(header, payload));
+                    sendButton.setEnabled(false);
+
+                }
+            }
+        });
+    }
+
+    @Subscribe
+    public void onDHResponse(DHResponseEvent event) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (context.isConnectedToServer() && context.getConnectedUserId() != -1) {
+                    ProtocolHeader header = new ProtocolHeader();
+                    header.setSourceId(context.getUserId());
+                    header.setDestinationId(context.getConnectedUserId());
+                    header.setMessageType(MessageType.SIMPLE_MESSAGE);
+                    String encryptedMessage = AesCipher.encrypt(context.getCommonKey(), inputField.getText());
+                    SimpleMessagePayload payload = new SimpleMessagePayload(encryptedMessage);
+                    ProtocolDataUnit pdu = new ProtocolDataUnit(header, payload);
+                    context.getClientConnection().sendMessage(pdu);
+                    StringBuffer buffer = new StringBuffer(logTextPane.getText());
+                    buffer.append("[" + header.getTimestamp() + "] ");
+                    buffer.append("You: " + inputField.getText() + "\n");
+                    logTextPane.setText(buffer.toString());
+                    inputField.setText("");
+
+                }
+            }
+        });
+    }
 
     @Subscribe
     public void onMessage(final SimpleMessageEvent event) {
@@ -126,11 +157,19 @@ public class MainWindow extends JFrame {
             @Override
             public void run() {
                 SimpleMessagePayload payload = (SimpleMessagePayload) event.getPdu().getPayload();
+                String decrypted = AesCipher.decrypt(context.getCommonKey(), payload.getMessage());
                 StringBuffer buffer = new StringBuffer(logTextPane.getText());
-                buffer.append(context.getConnectedUserName() + " send: " + payload.getMessage() + "\n");
+                buffer.append("[" + event.getPdu().getHeader().getTimestamp() + "] ");
+                buffer.append(context.getConnectedUserName() + " sent: " + decrypted + "\n");
+                context.setHasKeyBeenUsed(true);
                 logTextPane.setText(buffer.toString());
             }
         });
+    }
+
+    @Subscribe
+    public void onMessageResponse(SimpleMessageResponseEvent event) {
+        sendButton.setEnabled(true);
     }
 
     @Subscribe
@@ -147,6 +186,7 @@ public class MainWindow extends JFrame {
         if (payload.hasAccepted()) {
             context.setConnectedUserId(header.getSourceId());
             context.setConnectedWithUser(true);
+            sendButton.setEnabled(true);
         }
     }
 
@@ -160,6 +200,7 @@ public class MainWindow extends JFrame {
             response = true;
             context.setConnectedUserId(header.getSourceId());
             context.setConnectedUserName(payload.getNickname());
+            sendButton.setEnabled(true);
         } else if (n == 1) {
             response = false;
         }

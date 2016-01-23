@@ -41,16 +41,35 @@ public abstract class MessageProcessor {
             case CLIENT_CONNECT_RESPONSE:
                 onClientConnectRequestResponse(dataUnit);
                 break;
+            case DH_INVITE:
+                onDHInvite(dataUnit);
+                break;
+            case DH_RESPONSE:
+                onDHResponse(dataUnit);
+                break;
+            case SIMPLE_MESSAGE_RESPONSE:
+                onSimpleMessageResponseReceived(dataUnit);
+                break;
             default:
                 throw new NoSuchMethodError();
         }
     }
 
+    protected abstract void onSimpleMessageResponseReceived(ProtocolDataUnit pdu);
+
+    protected abstract void onDHResponse(ProtocolDataUnit dataUnit);
+
+    protected abstract void onDHInvite(ProtocolDataUnit dataUnit);
+
+    protected abstract void onSimpleMessageReceived(ProtocolDataUnit pdu);
+
+    protected abstract void onClientConnectRequest(ProtocolDataUnit pdu);
+
+    protected abstract void onClientConnectRequestResponse(ProtocolDataUnit pdu);
+
     protected void onListHostsResponseReceived(ProtocolDataUnit dataUnit) {
         throw new NotImplementedException();
     }
-
-    protected abstract void onSimpleMessageReceived(ProtocolDataUnit pdu);
 
     protected void onServerHelloResponseReceived(ProtocolDataUnit dataUnit) {
         throw new NotImplementedException();
@@ -65,14 +84,6 @@ public abstract class MessageProcessor {
     }
 
     protected void onClientDisconnected(ProtocolDataUnit pdu) {
-        throw new NotImplementedException();
-    }
-
-    protected void onClientConnectRequest(ProtocolDataUnit pdu) {
-        throw new NotImplementedException();
-    }
-
-    protected void onClientConnectRequestResponse(ProtocolDataUnit pdu) {
         throw new NotImplementedException();
     }
 

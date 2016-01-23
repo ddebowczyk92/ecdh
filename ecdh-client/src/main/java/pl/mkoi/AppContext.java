@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import pl.mkoi.client.Connection;
 import pl.mkoi.ecdh.crypto.model.EllipticCurve;
 import pl.mkoi.ecdh.crypto.model.KeyPair;
+import pl.mkoi.ecdh.crypto.model.Point;
 import pl.mkoi.ecdh.event.Event;
 import pl.mkoi.model.ServerAddressDetails;
 
@@ -27,6 +28,9 @@ public class AppContext {
     private String connectedUserName;
     private EllipticCurve curve;
     private KeyPair myKeyPair;
+    private Point connectedHostKey;
+    private Point commonKey;
+    private boolean hasKeyBeenUsed;
 
     private AppContext() {
     }
@@ -129,5 +133,29 @@ public class AppContext {
 
     public void setMyKeyPair(KeyPair myKeyPair) {
         this.myKeyPair = myKeyPair;
+    }
+
+    public Point getConnectedHostKey() {
+        return connectedHostKey;
+    }
+
+    public void setConnectedHostKey(Point connectedHostKey) {
+        this.connectedHostKey = connectedHostKey;
+    }
+
+    public Point getCommonKey() {
+        return commonKey;
+    }
+
+    public void setCommonKey(Point commonKey) {
+        this.commonKey = commonKey;
+    }
+
+    public boolean hasKeyBeenUsed() {
+        return hasKeyBeenUsed;
+    }
+
+    public void setHasKeyBeenUsed(boolean hasKeyBeenUsed) {
+        this.hasKeyBeenUsed = hasKeyBeenUsed;
     }
 }

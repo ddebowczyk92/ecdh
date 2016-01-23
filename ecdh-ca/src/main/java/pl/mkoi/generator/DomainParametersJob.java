@@ -35,7 +35,5 @@ public class DomainParametersJob implements Runnable {
         log.info("Curve generated:" + curve);
 
         AppContext.getInstance().postEvent(new CurveCalculatedEvent(curve));
-
-        //TODO generate ecdh domain parameters
     }
 }

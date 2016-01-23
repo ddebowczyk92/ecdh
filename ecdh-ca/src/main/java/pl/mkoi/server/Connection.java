@@ -10,6 +10,7 @@ import pl.mkoi.ecdh.communication.protocol.payload.*;
 import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
 import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
+import pl.mkoi.ecdh.crypto.util.SignatureUtil;
 import pl.mkoi.ecdh.event.DisconnectEvent;
 
 import java.io.BufferedReader;
@@ -77,6 +78,28 @@ public class Connection implements Runnable {
 
     private void setupMessageService() {
         messageService = new MessageProcessor() {
+            @Override
+            protected void onSimpleMessageResponseReceived(ProtocolDataUnit pdu) {
+                Connection connection = context.getConnection(pdu.getHeader().getDestinationId());
+                connection.writeDataToStream(pdu);
+            }
+
+            @Override
+            protected void onDHResponse(ProtocolDataUnit pdu) {
+                PayloadWithSignature pws = (PayloadWithSignature) pdu.getPayload();
+                pws.setSignature(SignatureUtil.sign(context.getPrivateKey(), pws.payloadToSign()));
+                Connection connection = context.getConnection(pdu.getHeader().getDestinationId());
+                connection.writeDataToStream(pdu);
+            }
+
+            @Override
+            protected void onDHInvite(ProtocolDataUnit pdu) {
+                PayloadWithSignature pws = (PayloadWithSignature) pdu.getPayload();
+                pws.setSignature(SignatureUtil.sign(context.getPrivateKey(), pws.payloadToSign()));
+                Connection connection = context.getConnection(pdu.getHeader().getDestinationId());
+                connection.writeDataToStream(pdu);
+            }
+
             @Override
             protected void onSimpleMessageReceived(ProtocolDataUnit pdu) {
                 Connection connection = context.getConnection(pdu.getHeader().getDestinationId());

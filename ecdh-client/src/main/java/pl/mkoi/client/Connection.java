@@ -5,12 +5,12 @@ import pl.mkoi.AppContext;
 import pl.mkoi.ecdh.communication.protocol.MessageType;
 import pl.mkoi.ecdh.communication.protocol.ProtocolDataUnit;
 import pl.mkoi.ecdh.communication.protocol.ProtocolHeader;
-import pl.mkoi.ecdh.communication.protocol.payload.DisconnectedPayload;
-import pl.mkoi.ecdh.communication.protocol.payload.Payload;
-import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloPayload;
-import pl.mkoi.ecdh.communication.protocol.payload.ServerHelloResponsePayload;
+import pl.mkoi.ecdh.communication.protocol.payload.*;
+import pl.mkoi.ecdh.communication.protocol.payload.diffiehellman.DHInvitePayload;
+import pl.mkoi.ecdh.communication.protocol.payload.diffiehellman.DHResponsePayload;
 import pl.mkoi.ecdh.communication.protocol.util.MessageProcessor;
 import pl.mkoi.ecdh.communication.protocol.util.PDUReaderWriter;
+import pl.mkoi.ecdh.crypto.model.Point;
 import pl.mkoi.ecdh.crypto.util.KeyGenerator;
 import pl.mkoi.ecdh.crypto.util.SignatureKeyPairGenerator;
 import pl.mkoi.ecdh.event.*;
@@ -69,7 +69,42 @@ public class Connection extends Thread {
     private void setupMessageService() {
         messageService = new MessageProcessor() {
             @Override
+            protected void onSimpleMessageResponseReceived(ProtocolDataUnit pdu) {
+                context.setHasKeyBeenUsed(true);
+                context.setMyKeyPair(KeyGenerator.generateKeyPair(context.getCurve()));
+                context.postEvent(new SimpleMessageResponseEvent(pdu));
+            }
+
+            @Override
+            protected void onDHResponse(ProtocolDataUnit dataUnit) {
+                DHResponsePayload payload = (DHResponsePayload) dataUnit.getPayload();
+                Point bG = payload.getbG();
+                context.setConnectedHostKey(bG);
+                context.setCommonKey(bG.multiplyByScalar(context.getMyKeyPair().getPrivateKey(), context.getCurve()));
+                context.setHasKeyBeenUsed(false);
+                context.postEvent(new DHResponseEvent());
+            }
+
+            @Override
+            protected void onDHInvite(ProtocolDataUnit dataUnit) {
+                DHInvitePayload payload = (DHInvitePayload) dataUnit.getPayload();
+                Point aG = payload.getaG();
+                context.setConnectedHostKey(aG);
+                context.setCommonKey(aG.multiplyByScalar(context.getMyKeyPair().getPrivateKey(), context.getCurve()));
+                context.setHasKeyBeenUsed(false);
+                ProtocolHeader header = new ProtocolHeader(MessageType.DH_RESPONSE);
+                header.setDestinationId(dataUnit.getHeader().getSourceId());
+                DHResponsePayload newPayload = new DHResponsePayload(context.getMyKeyPair().getPublicKey());
+                sendMessage(new ProtocolDataUnit(header, newPayload));
+            }
+
+            @Override
             protected void onSimpleMessageReceived(ProtocolDataUnit pdu) {
+                ProtocolHeader header = new ProtocolHeader(MessageType.SIMPLE_MESSAGE_RESPONSE);
+                header.setDestinationId(pdu.getHeader().getSourceId());
+                DummyPayload payload = new DummyPayload();
+                sendMessage(new ProtocolDataUnit(header, payload));
+                context.setMyKeyPair(KeyGenerator.generateKeyPair(context.getCurve()));
                 context.postEvent(new SimpleMessageEvent(pdu));
             }
 
@@ -95,7 +130,7 @@ public class Connection extends Thread {
                 Payload newPayload = new ServerHelloResponsePayload(context.getUserNickName());
                 ProtocolDataUnit newPdu = new ProtocolDataUnit(header, newPayload);
                 log.info(context.getCurve());
-                context.getClientConnection().sendMessage(newPdu);
+                sendMessage(newPdu);
             }
 
             @Override
