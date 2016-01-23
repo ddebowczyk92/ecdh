@@ -20,6 +20,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
+ * Main window of client's application
+ * <p/>
  * Created by DominikD on 2016-01-16.
  */
 public class MainWindow extends JFrame {

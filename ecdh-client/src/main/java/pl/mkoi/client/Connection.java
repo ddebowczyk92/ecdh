@@ -23,6 +23,8 @@ import java.net.Socket;
 import java.security.PublicKey;
 
 /**
+ * Client's connection handled in separate thread
+ * <p/>
  * Created by DominikD on 2016-01-19.
  */
 public class Connection extends Thread {

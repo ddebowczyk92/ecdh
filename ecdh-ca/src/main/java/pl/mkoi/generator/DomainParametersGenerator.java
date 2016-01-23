@@ -7,6 +7,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Generates domain parameters in seperate thread pools
+ * <p/>
  * Created by DominikD on 2016-01-22.
  */
 public class DomainParametersGenerator {
@@ -19,6 +21,13 @@ public class DomainParametersGenerator {
         ;
     }
 
+    /**
+     * Starts generation of
+     *
+     * @param m degree
+     * @param a a value of elliptic curve
+     * @param b b value of elliptic curve
+     */
     public void runGenerator(int m, Polynomial a, Polynomial b) {
         scheduler.scheduleWithFixedDelay(new DomainParametersJob(m, a, b), 0, RATE, TimeUnit.SECONDS);
     }

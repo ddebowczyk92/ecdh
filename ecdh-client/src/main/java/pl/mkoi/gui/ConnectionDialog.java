@@ -16,6 +16,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.text.NumberFormat;
 
+/**
+ * GUI for setting up connection parameters with server
+ */
 public class ConnectionDialog extends JDialog {
 
     private static final Logger log = Logger.getLogger(ConnectionDialog.class);

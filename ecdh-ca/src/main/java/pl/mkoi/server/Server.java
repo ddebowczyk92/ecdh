@@ -11,18 +11,31 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * Server object class, runs in separate Ttread
+ * <p/>
  * Created by DominikD on 2016-01-18.
  */
 public class Server extends Thread {
 
     private static final Logger log = Logger.getLogger(Server.class);
 
-
+    /**
+     * port on which server listens
+     */
     private final int port;
+    /**
+     * limit of clients that can be connected to server
+     */
     private final int connectionLimit;
+    /**
+     * client's connections id generator
+     */
     private final AtomicInteger idGenerator = new AtomicInteger(0);
     private boolean running;
     private ServerSocket socket;
+    /**
+     * Executor for running connections in separate threads
+     */
     private ExecutorService executorService;
 
     public Server(int port, int connectionLimit) {
@@ -51,6 +64,9 @@ public class Server extends Thread {
         }
     }
 
+    /**
+     * Safely stops server
+     */
     public void stopServer() {
         if (isRunning()) {
             this.running = false;

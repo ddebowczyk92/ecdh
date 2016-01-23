@@ -15,13 +15,30 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Server context singleton
+ * <p/>
  * Created by DominikD on 2016-01-18.
  */
 public class AppContext {
+    /**
+     * instance of singleton
+     */
     private static AppContext ourInstance = new AppContext();
+    /**
+     * KeyPair for message sigining
+     */
     private final KeyPair keyPair;
+    /**
+     * Storage for every running connection handled by server
+     */
     private ConcurrentHashMap<Integer, Connection> connections = new ConcurrentHashMap<>();
+    /**
+     * Event bus for event posting and listeners registering
+     */
     private EventBus eventBus = new EventBus("SERVER_EVENT_BUS");
+    /**
+     * Elliptic curve parameters
+     */
     private EllipticCurve curve;
 
     private AppContext() {

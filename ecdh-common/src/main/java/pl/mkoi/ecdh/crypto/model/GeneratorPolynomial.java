@@ -6,7 +6,9 @@ import org.apache.log4j.Logger;
 import java.math.BigInteger;
 import java.util.NoSuchElementException;
 
-
+/**
+ * Object representation of generator polynomial
+ */
 public class GeneratorPolynomial extends Polynomial {
 
     private static final Logger log = Logger.getLogger(GeneratorPolynomial.class);
@@ -18,6 +20,12 @@ public class GeneratorPolynomial extends Polynomial {
         setGeneratorPowers(generatorPowers);
     }
 
+    /**
+     * Function for finding generator polynomial by brute force algorithm
+     *
+     * @param modPolynomial
+     * @return
+     */
     public static GeneratorPolynomial findGenerator(Polynomial modPolynomial) {
         BigInteger power = BigInteger.ZERO;
         long generatorLong = 2L;
@@ -60,6 +68,12 @@ public class GeneratorPolynomial extends Polynomial {
         this.generatorPowers = generatorPowers;
     }
 
+    /**
+     * Computes power of generator candidate
+     *
+     * @param power
+     * @return
+     */
     public Polynomial getGeneratorPower(long power) {
 
         Polynomial poly = getGeneratorPowers().get(power);

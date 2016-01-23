@@ -7,6 +7,8 @@ import pl.mkoi.ecdh.crypto.util.PointGenerator;
 import pl.mkoi.ecdh.event.CurveCalculatedEvent;
 
 /**
+ * Job runned by DomainParametersGenerator class
+ * <p/>
  * Created by DominikD on 2016-01-22.
  */
 public class DomainParametersJob implements Runnable {

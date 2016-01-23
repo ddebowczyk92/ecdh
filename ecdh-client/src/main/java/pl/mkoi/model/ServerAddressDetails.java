@@ -1,5 +1,8 @@
 package pl.mkoi.model;
 
+/**
+ * Connection parameters class
+ */
 public class ServerAddressDetails {
     private String nickName;
     private String ipAddress;

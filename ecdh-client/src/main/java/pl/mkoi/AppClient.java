@@ -4,6 +4,9 @@ import pl.mkoi.gui.MainWindow;
 
 import javax.swing.*;
 
+/**
+ * Main class of client's application
+ */
 public class AppClient {
     public static void main(String[] args) {
         try {

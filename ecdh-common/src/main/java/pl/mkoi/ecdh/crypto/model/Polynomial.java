@@ -8,13 +8,20 @@ import java.util.Random;
 
 /**
  * Created by DominikD on 2015-11-01.
+ * <p/>
+ * Object representation of polynomial in GF(2^m) for cryptographic purposes
  */
 public class Polynomial {
+
+    private final static Logger log = Logger.getLogger(Polynomial.class);
 
     public static final Polynomial X = Polynomial.createFromLong(2L);
     public static final Polynomial ONE = Polynomial.createFromLong(1L);
     public static final Polynomial ZERO = Polynomial.createFromLong(0L);
-    private final static Logger log = Logger.getLogger(Polynomial.class);
+
+    /**
+     * Stores polynomial bits
+     */
     private BitSet degrees;
 
     public Polynomial(BitSet degrees) {
@@ -25,6 +32,12 @@ public class Polynomial {
         this.setDegrees((BitSet) polynomial.getDegrees().clone());
     }
 
+    /**
+     * Function for creating random irreducible polynomials of given degree
+     *
+     * @param degree degree of polynomial
+     * @return
+     */
     public static Polynomial createIrreducible(long degree) {
         while (true) {
             Polynomial p = createRandom(degree);
@@ -32,6 +45,12 @@ public class Polynomial {
         }
     }
 
+    /**
+     * Constructs random polynomial of given degree
+     *
+     * @param degree degree of polynomial
+     * @return
+     */
     public static Polynomial createRandom(long degree) {
         Random random = new Random();
         byte[] bytes = new byte[(int) (degree / 8) + 1];
@@ -39,6 +58,12 @@ public class Polynomial {
         return createFromBytes(bytes, degree);
     }
 
+    /**
+     * Constructs polynomial from given long value bits
+     *
+     * @param value value of polynomial bits
+     * @return
+     */
     public static Polynomial createFromLong(long value) {
         BitSet degress = new BitSet();
         int i = 0;
@@ -50,6 +75,12 @@ public class Polynomial {
         return new Polynomial(degress);
     }
 
+    /**
+     * Constructs polynomial from gievn BigInteger object value bits
+     *
+     * @param value value of polynomial bits
+     * @return
+     */
     public static Polynomial createFromBigInteger(BigInteger value) {
         BitSet degrees = new BitSet();
         int i = 0;
@@ -61,6 +92,13 @@ public class Polynomial {
         return new Polynomial(degrees);
     }
 
+    /**
+     * Constructs polynomial of given degree from byte array
+     *
+     * @param bytes  array of bytes
+     * @param degree degree of polynomial
+     * @return
+     */
     public static Polynomial createFromBytes(byte[] bytes, long degree) {
         BitSet degrees = new BitSet();
         for (int i = 0; i < degree; i++) {
@@ -81,6 +119,11 @@ public class Polynomial {
         this.degrees = degrees;
     }
 
+    /**
+     * Returns a string of polynomial bits
+     *
+     * @return
+     */
     public String toBinaryString() {
         StringBuffer buffer = new StringBuffer();
         for (int i = this.degrees.length() - 1; i >= 0; i--) {
@@ -89,24 +132,48 @@ public class Polynomial {
         return buffer.toString();
     }
 
+    /**
+     * Computes this || polynomial in GF(2^m)
+     *
+     * @param polynomial
+     * @return
+     */
     public Polynomial or(Polynomial polynomial) {
         BitSet polynomialDgrs = (BitSet) polynomial.getDegrees().clone();
         polynomialDgrs.or(this.degrees);
         return new Polynomial(polynomialDgrs);
     }
 
+    /**
+     * Computes this && polynomial in GF(2^m)
+     *
+     * @param polynomial
+     * @return
+     */
     public Polynomial and(Polynomial polynomial) {
         BitSet polynomialDgrs = (BitSet) polynomial.getDegrees().clone();
         polynomialDgrs.and(this.degrees);
         return new Polynomial(polynomialDgrs);
     }
 
+    /**
+     * Computes this xor polynomial in GF(2^m)
+     *
+     * @param polynomial
+     * @return
+     */
     public Polynomial xor(Polynomial polynomial) {
         BitSet polynomialDgrs = (BitSet) polynomial.getDegrees().clone();
         polynomialDgrs.xor(this.degrees);
         return new Polynomial(polynomialDgrs);
     }
 
+    /**
+     * Computes this % polynomial in GF(2^m)
+     *
+     * @param polynomial
+     * @return
+     */
     public Polynomial mod(Polynomial polynomial) {
         int da = this.getDegree();
         int db = polynomial.getDegree();
@@ -120,6 +187,13 @@ public class Polynomial {
         return register;
     }
 
+    /**
+     * Computes this ^ e % m
+     *
+     * @param e
+     * @param m
+     * @return
+     */
     public Polynomial modPow(BigInteger e, Polynomial m) {
         Polynomial result = Polynomial.ONE;
         Polynomial b = new Polynomial(this);
@@ -135,6 +209,12 @@ public class Polynomial {
     }
 
 
+    /**
+     * Computes this * polynomial
+     *
+     * @param polynomial
+     * @return
+     */
     public Polynomial multiply(Polynomial polynomial) {
         BitSet degrees = new BitSet();
         for (int i = this.getDegree(); i >= 0; i--) {
@@ -149,6 +229,13 @@ public class Polynomial {
         return new Polynomial(degrees);
     }
 
+    /**
+     * Computes greatest common divisor of this and given polynomial using
+     * Euclid's algorithm
+     *
+     * @param b
+     * @return
+     */
     public Polynomial gcd(Polynomial b) {
         Polynomial a = new Polynomial(this);
         while (!b.isEmpty()) {
@@ -160,10 +247,22 @@ public class Polynomial {
     }
 
 
+    /**
+     * Checks if polynomial has bit of given degree
+     *
+     * @param k
+     * @return
+     */
     public boolean hasDegree(int k) {
         return this.degrees.get(k);
     }
 
+    /**
+     * Computes this << shift
+     *
+     * @param shift
+     * @return
+     */
     public Polynomial shiftLeft(int shift) {
         BitSet degrees = new BitSet(this.degrees.length() + shift);
         for (int i = 0; i < this.degrees.length(); i++) {
@@ -172,6 +271,9 @@ public class Polynomial {
         return new Polynomial(degrees);
     }
 
+    /**
+     * @return degree of polynomial
+     */
     public int getDegree() {
         return this.degrees.length() - 1;
     }
@@ -188,12 +290,23 @@ public class Polynomial {
         return this.hasDegree(x.getDegree()) ? 1 : 0;
     }
 
+    /**
+     * Computes ( x^(2^p) - x ) mod f
+     *
+     * @param p
+     * @return
+     */
     private Polynomial reduceExponent(final int p) {
         BigInteger q_to_p = BigInteger.valueOf(2L).pow(p);
         Polynomial x_to_q_to_p = X.modPow(q_to_p, this);
         return x_to_q_to_p.xor(X).mod(this);
     }
 
+    /**
+     * Tests and Constructions of Irreducible Polynomials over Finite Fields
+     *
+     * @return
+     */
     public boolean isReducibile() {
         final long degree = this.getDegree();
         for (int i = 1; i <= (int) (degree / 2); i++) {

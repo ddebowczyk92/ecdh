@@ -11,24 +11,56 @@ import pl.mkoi.model.ServerAddressDetails;
 import java.security.PublicKey;
 
 /**
+ * Client's context singleton
+ * <p/>
  * Created by DominikD on 2016-01-17.
  */
 public class AppContext {
     private static AppContext ourInstance = new AppContext();
 
+    /**
+     * Connection with server
+     */
     private Connection clientConnection;
+    /**
+     * Connection parameters
+     */
     private ServerAddressDetails serverAddressDetails;
     private boolean connectedToServer;
     private String userNickName;
+    /**
+     * User id assigned by server
+     */
     private int userId;
     private boolean connectedWithUser;
     private int connectedUserId = -1;
+    /**
+     * Server's public key used to signature verification
+     */
     private PublicKey serverPublicKey;
+    /**
+     * Event bus for event posting and listeners registering
+     */
     private EventBus eventBus = new EventBus("CLIENT_EVENT_BUS");
+    /**
+     * User nickname that client is connected with
+     */
     private String connectedUserName;
+    /**
+     * Elliptic curve parameters
+     */
     private EllipticCurve curve;
+    /**
+     * ECDH keypair
+     */
     private KeyPair myKeyPair;
+    /**
+     * Connected host public key
+     */
     private Point connectedHostKey;
+    /**
+     * Common simmetric key
+     */
     private Point commonKey;
     private boolean hasKeyBeenUsed;
 

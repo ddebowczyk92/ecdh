@@ -14,6 +14,9 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.List;
 
+/**
+ * Dialog GUI showing list of avaiable clients that user can communicate with
+ */
 public class UserListDialog extends JDialog {
     private static final Logger log = Logger.getLogger(UserListDialog.class);
     private JPanel contentPane;

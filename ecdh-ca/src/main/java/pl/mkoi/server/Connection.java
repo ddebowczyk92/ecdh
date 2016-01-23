@@ -21,12 +21,17 @@ import java.net.Socket;
 import java.util.Map;
 
 /**
+ * Every client's connection accpted by server is runned in separate thread
+ * <p/>
  * Created by DominikD on 2016-01-18.
  */
 public class Connection implements Runnable {
 
     private static final Logger log = Logger.getLogger(Connection.class);
 
+    /**
+     * id of connection (client)
+     */
     private final int id;
     private final Socket socket;
     private String nickName;
@@ -69,6 +74,11 @@ public class Connection implements Runnable {
         }
     }
 
+    /**
+     * Serializes given Protocol Data Unit to string and streams it through socket
+     *
+     * @param message
+     */
     public synchronized void writeDataToStream(ProtocolDataUnit message) {
         String dataToSend = pduReaderWriter.serialize(message);
         out.println(dataToSend);
@@ -76,6 +86,9 @@ public class Connection implements Runnable {
         log.debug("SENT :" + dataToSend);
     }
 
+    /**
+     * Protocol messages handling setup
+     */
     private void setupMessageService() {
         messageService = new MessageProcessor() {
             @Override
@@ -137,8 +150,6 @@ public class Connection implements Runnable {
             @Override
             protected void onClientConnectRequestResponse(ProtocolDataUnit pdu) {
                 ConnectRequestResponsePayload payload = (ConnectRequestResponsePayload) pdu.getPayload();
-                //TODO Add storage for connections between hosts
-                //TODO Add connection between hosts info to storage
                 Connection connection = context.getConnection(pdu.getHeader().getDestinationId());
                 connection.writeDataToStream(pdu);
             }
@@ -147,6 +158,11 @@ public class Connection implements Runnable {
 
     }
 
+    /**
+     * deserializes given data string to Protocol Data Unit object
+     *
+     * @param data
+     */
     private void processData(String data) {
         ProtocolDataUnit pdu = pduReaderWriter.deserialize(data);
         messageService.process(pdu);
@@ -172,6 +188,9 @@ public class Connection implements Runnable {
         this.nickName = nickName;
     }
 
+    /**
+     * Safely closes this connection
+     */
     public void closeConnection() {
         log.info("closing connection " + getId());
         if (this.isRunning()) {
@@ -197,6 +216,11 @@ public class Connection implements Runnable {
         context.postEvent(new DisconnectEvent(this.id));
     }
 
+    /**
+     * Client disconnect event handler
+     *
+     * @param event
+     */
     @Subscribe
     public void onClientDisconnect(DisconnectEvent event) {
         if (this.id != event.getConnectionId()) {
