@@ -9,7 +9,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
 /**
- * Created by DominikD on 2016-01-21.
+ * Util class for generating sha1 signature key pair
  */
 public class SignatureKeyPairGenerator {
 
@@ -18,6 +18,11 @@ public class SignatureKeyPairGenerator {
     private static final String PROVIDER = "SUN";
     private static final int KEY_LENGTH = 1024;
 
+    /**
+     * generate signature key pair
+     *
+     * @return generated keypair
+     */
     public static KeyPair generateSignatureKeyPair() {
         try {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);
@@ -38,7 +43,7 @@ public class SignatureKeyPairGenerator {
         return new BASE64Encoder().encode(publicKeyBytes);
     }
 
-    public static PublicKey decodePublicKey(String keyString){
+    public static PublicKey decodePublicKey(String keyString) {
         byte[] sigBytes2;
         try {
             sigBytes2 = new BASE64Decoder().decodeBuffer(keyString);

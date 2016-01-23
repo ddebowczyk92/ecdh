@@ -92,12 +92,23 @@ public class EllipticCurve {
 
     }
 
+    /**
+     * method substract points
+     *
+     * @param first  minuend
+     * @param second subtrahend
+     */
     public Point subtractPoint(Point first, Point second) {
         Point result = new Point();
 
         return addPoint(first, getNegativePoint(second));
     }
 
+    /**
+     * Methods returns -point
+     *
+     * @param point given point
+     */
     public Point getNegativePoint(Point point) {
         Point result = new Point();
         result.setX(point.getX());
@@ -105,39 +116,65 @@ public class EllipticCurve {
         return result;
     }
 
+    /**
+     * @return m for curve's field
+     */
     public int getM() {
         return field.getM();
     }
 
+    /**
+     * @param m set m parameter of a field
+     */
     public void setM(int m) {
         field.setM(m);
     }
 
+    /**
+     * @return a parameter of curve equation
+     */
     public Polynomial getA() {
         return a;
     }
 
-
+    /**
+     * @return b paramter of curve equation
+     */
     public Polynomial getB() {
         return b;
     }
 
+    /**
+     * @return generator point of a field
+     */
     public Point getGeneratorPoint() {
         return generatorPoint;
     }
 
+    /**
+     * sets generator point for a curve
+     */
     public void setGeneratorPoint(Point generatorPoint) {
         this.generatorPoint = generatorPoint;
     }
 
+    /**
+     * @return irreducible polynomial for field
+     */
     public Polynomial getIrreduciblePolynomial() {
         return irreduciblePolynomial;
     }
 
+    /**
+     * set irreducible sets new irreducible polynomial for field
+     */
     public void setIrreduciblePolynomial(Polynomial irreduciblePolynomial) {
         this.irreduciblePolynomial = irreduciblePolynomial;
     }
 
+    /**
+     * @return finite field object
+     */
     public FiniteField getField() {
         return field;
     }

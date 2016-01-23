@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * Created by DominikD on 2016-01-02.
+ * Util class for generating generator points for curve
  */
 public class PointGenerator {
 
@@ -20,6 +20,13 @@ public class PointGenerator {
 
     private final static Random random = new Random();
 
+    /**
+     * Method generates point for curve and generator polynomial
+     *
+     * @param curve      curve parameter
+     * @param polynomial given generator polynomial
+     * @return generated point
+     */
     public static Point generatePoint(EllipticCurve curve, GeneratorPolynomial polynomial) {
         while (true) {
             Polynomial x = getRandomElement(polynomial);
@@ -29,6 +36,12 @@ public class PointGenerator {
         }
     }
 
+    /**
+     * returns order of a point
+     *
+     * @param curve given curve
+     * @param point given point
+     */
     public static int getPointOrder(EllipticCurve curve, Point point) {
         BigInteger scalar = BigInteger.ONE;
         Point pointCopy = new Point(point.getX(), point.getY());
@@ -43,6 +56,7 @@ public class PointGenerator {
         }
         return multiplications.size() + 1;
     }
+
 
     private static Polynomial getRandomElement(GeneratorPolynomial generatorPolynomial) {
         int random = PointGenerator.random.nextInt(generatorPolynomial.getGeneratorPowers().size());

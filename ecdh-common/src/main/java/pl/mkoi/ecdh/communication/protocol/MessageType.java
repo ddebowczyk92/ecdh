@@ -1,7 +1,7 @@
 package pl.mkoi.ecdh.communication.protocol;
 
 /**
- * Created by DominikD on 2016-01-18.
+ * Enum with all kind of message that can be handled
  */
 public enum MessageType {
     SIMPLE_MESSAGE,

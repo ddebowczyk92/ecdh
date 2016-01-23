@@ -9,14 +9,21 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Arrays;
 
+/**
+ * Util class for aes ciphering
+ */
 public class AesCipher {
 
     public final static int KEY_LENGTH_BYTES = 128 / 8;
-
     private final static String CIPHER_SUITE = "AES/ECB/NoPadding";
-
     private static final Logger log = Logger.getLogger(AesCipher.class);
 
+    /**
+     * method encrypts input with given key
+     *
+     * @param point key
+     * @param value
+     */
     public static String encrypt(Point point, String value) {
         try {
 
@@ -36,6 +43,12 @@ public class AesCipher {
         return null;
     }
 
+    /**
+     * method decrypts input with given key
+     *
+     * @param point     key
+     * @param encrypted encrypted string
+     */
     public static String decrypt(Point point, String encrypted) {
         try {
             byte[] key = AesCipher.calculateKey(point);
@@ -56,7 +69,11 @@ public class AesCipher {
         return null;
     }
 
-
+    /**
+     * method creates key from point
+     *
+     * @param point
+     */
     public static byte[] calculateKey(Point point) {
 
         byte[] key = new byte[KEY_LENGTH_BYTES];
@@ -68,6 +85,11 @@ public class AesCipher {
         return key;
     }
 
+    /**
+     * method encrypts input with given key
+     *
+     * @param value string which needs to have length 16 * n
+     */
     private static String paddingFix(String value) {
         int length = value.getBytes().length % 16;
         if (length != 0) {

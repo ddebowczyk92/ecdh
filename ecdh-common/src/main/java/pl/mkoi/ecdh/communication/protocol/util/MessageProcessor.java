@@ -55,34 +55,68 @@ public abstract class MessageProcessor {
         }
     }
 
+
+    /**
+     * Method called on SimpleMessageResponse message received
+     */
     protected abstract void onSimpleMessageResponseReceived(ProtocolDataUnit pdu);
 
+    /**
+     * Method called on DHResponse message received
+     */
     protected abstract void onDHResponse(ProtocolDataUnit dataUnit);
 
+    /**
+     * Method called on DHInvitee message received
+     */
     protected abstract void onDHInvite(ProtocolDataUnit dataUnit);
 
+    /**
+     * Method called on SimpleMessageReceived message received
+     */
     protected abstract void onSimpleMessageReceived(ProtocolDataUnit pdu);
 
+    /**
+     * Method called on ClientConnectRequest message received
+     */
     protected abstract void onClientConnectRequest(ProtocolDataUnit pdu);
 
+    /**
+     * Method called on ClientConnectRequestResponse message received
+     */
     protected abstract void onClientConnectRequestResponse(ProtocolDataUnit pdu);
 
+    /**
+     * Method called on ListHostsResponseReceived message received
+     */
     protected void onListHostsResponseReceived(ProtocolDataUnit dataUnit) {
         throw new NotImplementedException();
     }
 
+    /**
+     * Method called on ServerHelloResponseReceived message received
+     */
     protected void onServerHelloResponseReceived(ProtocolDataUnit dataUnit) {
         throw new NotImplementedException();
     }
 
+    /**
+     * Method called on ListHostsRequestReceived message received
+     */
     protected void onListHostsRequestReceived(ProtocolDataUnit pdu) {
         throw new NotImplementedException();
     }
 
+    /**
+     * Method called on ServerHelloReceived message received
+     */
     protected void onServerHelloReceived(ProtocolDataUnit pdu) {
         throw new NotImplementedException();
     }
 
+    /**
+     * Method called on ClientDisconnected message received
+     */
     protected void onClientDisconnected(ProtocolDataUnit pdu) {
         throw new NotImplementedException();
     }

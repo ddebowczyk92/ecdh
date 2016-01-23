@@ -6,7 +6,7 @@ import pl.mkoi.ecdh.communication.protocol.payload.Payload;
 import java.lang.reflect.Type;
 
 /**
- * Created by DominikD on 2016-01-18.
+ * Class handles JSON serialization and deserialization
  */
 class PayloadAdapter implements JsonSerializer<Payload>, JsonDeserializer<Payload> {
 
@@ -21,6 +21,7 @@ class PayloadAdapter implements JsonSerializer<Payload>, JsonDeserializer<Payloa
 
         Class<?> objectClass = null;
         try {
+            //deserialize class detected by name
             objectClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -32,6 +33,8 @@ class PayloadAdapter implements JsonSerializer<Payload>, JsonDeserializer<Payloa
     @Override
     public JsonElement serialize(Payload payload, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject retValue = new JsonObject();
+
+        //manually adding info for deserialization
         String className = payload.getClass().getName();
         retValue.addProperty(CLASSNAME, className);
         JsonElement elem = jsonSerializationContext.serialize(jsonSerializationContext.serialize(payload));

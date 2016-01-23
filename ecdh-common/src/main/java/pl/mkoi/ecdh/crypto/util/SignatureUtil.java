@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import java.security.*;
 
 /**
- * Created by DominikD on 2016-01-21.
+ * Util class for signing and checking signature
  */
 public class SignatureUtil {
 

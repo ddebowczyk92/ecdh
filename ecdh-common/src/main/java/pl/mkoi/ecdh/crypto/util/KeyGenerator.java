@@ -8,10 +8,18 @@ import pl.mkoi.ecdh.crypto.model.Point;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+/**
+ * Util class for keypair generation
+ */
 public class KeyGenerator {
 
     private final static Logger log = Logger.getLogger(KeyGenerator.class);
 
+    /**
+     * generates keypair
+     *
+     * @param curve curve for generating keypair
+     */
     public static KeyPair generateKeyPair(EllipticCurve curve) {
 
         KeyPair pair = new KeyPair();

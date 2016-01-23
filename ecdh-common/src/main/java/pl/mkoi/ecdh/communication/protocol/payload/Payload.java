@@ -1,7 +1,7 @@
 package pl.mkoi.ecdh.communication.protocol.payload;
 
 /**
- * Created by DominikD on 2016-01-18.
+ * Class for unification of all payload derivative types
  */
 public abstract class Payload {
 }
