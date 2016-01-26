@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ecdh-common</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <name>ecdh-common</name>
     <url>http://maven.apache.org</url>
